@@ -38,7 +38,9 @@ bool validar_nombre(char *);
 void clientes(FILE*);
 void agregar_cliente(FILE*);
 void consultar(FILE*);
+void modificar_ciliente(FILE*);
 void espacios_blancos(FILE*);
+void modificar_menu(FILE *, struct datos_clientes, int);
 bool validar_telefono(char *);
 
 main()
@@ -266,7 +268,9 @@ bool validar_telefono(char *ftelefono)
 void consultar(FILE* Ptr_fileTxt  )
 {
 	struct datos_clientes clientef;
-	int opc_consulta;
+	int opc_consulta,clave_ciliente;
+	char nombre_ciliente[50],telefono_ciliente[50];
+	bool encontrado = true;
 
 	do
 	{
@@ -277,12 +281,206 @@ void consultar(FILE* Ptr_fileTxt  )
 			printf("%-15s\n","2.-Telefono");
 			printf("%-15s\n","3.-Nombre");
 			printf("%-15s\n","4.-Salir");
+			scanf("%d",&opc_consulta);
 		}while(opc_consulta < 1 || opc_consulta > 4);
 		
-
-		
+		switch(opc_consulta)
+		{
+			case 1:
+				do
+				{
+					printf("Ingrese la clave del ciliente a consultar\n");
+					scanf("%d",&clave_ciliente);
+				}while(validar_clave(&clave_ciliente));
+				
+				fseek(Ptr_fileTxt, (clave_ciliente - 1) * sizeof(struct datos_clientes), SEEK_SET);
+				fread(&clientef, sizeof(struct datos_clientes),1,Ptr_fileTxt);
+				
+				if(clientef.clave == clave_ciliente)
+				{
+					imprimir_cliente(&clientef);
+				}
+				else
+					printf(rojo"La clave ingresada no existe\n"reset);
+				break;
+			case 3:
+				do
+				{
+					fflush(stdin);
+					printf("Ingrese el nombre del cliente a buscar\n");
+					gets(nombre_ciliente);
+				}while(validar_nombre(nombre_ciliente));
+				
+				rewind(clientef);
+				
+				fread(&clientef, sizeof(struct datos_clientes),1,Ptr_fileTxt);
+				while(!feof(clientef))
+				{
+					if(strcmp(clientef.nombre,nombre_ciliente))
+					{
+						imprimir_cliente(&clientef);
+						encontrado = false;
+					}
+						
+				}
+				if(encontrado)
+					printf(rojo"El nombre ingresado no existe\n"reset);
+				
+				break;
+			case 2:
+				do
+				{
+					fflush(stdin);
+					printf("Ingrese el telefono del cliente a buscar\n");
+					gets(telefono_ciliente);
+				}while(validar_telefono(telefono_ciliente));
+				
+				rewind(clientef);
+				fread(&clientef, sizeof(struct datos_clientes),1,Ptr_fileTxt);
+				
+				while(!feof(clientef))
+				{
+					if(strcmp(clientef.telefono,telefono_ciliente))
+					{
+						imprimir_cliente(&clientef);
+						encontrado = false;
+					}
+					
+				}
+				if(encontrado)
+					printf(rojo"El telefono ingresado no existe\n"reset);
+				break;
+			case 4:
+				printf("Gracias por usar el programa\n");
+				break;
+		}
 		
 	}while(opc_consulta != 4);
+}
+
+void modificar_ciliente(FILE* Ptr_fileTxt)
+{
+	struct datos_clientes cliente;
+	int opc_consulta,clave_ciliente;
+	char nombre_ciliente[50],telefono_ciliente[50];
+	bool encontrado = true;
+
+	do
+	{
+		do
+		{
+			printf("%20s\n", "Modificar cliente por: ");
+			printf("%-15s\n","1.-Clave");
+			printf("%-15s\n","2.-Telefono");
+			printf("%-15s\n","3.-Nombre");
+			printf("%-15s\n","4.-Salir");
+			scanf("%d",&opc_consulta);
+		}while(opc_consulta < 1 || opc_consulta > 4);
+		
+		switch(opc_consulta)
+		{
+			case 1:
+				do
+				{
+					printf("Ingrese la clave del ciliente a modificar\n");
+					scanf("%d",&clave_ciliente);
+				}while(validar_clave(&clave_ciliente));
+				
+				fseek(Ptr_fileTxt, (clave_ciliente - 1) * sizeof(struct datos_clientes), SEEK_SET);
+				fread(&clientef, sizeof(struct datos_clientes),1,Ptr_fileTxt);
+				
+				if(clientef.clave == clave_ciliente)
+				{
+					modificar_menu(Ptr_fileTxt,&clientef,1);
+				}
+				else
+					printf(rojo"La clave ingresada no existe\n"reset);
+				break;
+			case 3:
+				do
+				{
+					fflush(stdin);
+					printf("Ingrese el nombre del cliente a modificar\n");
+					gets(nombre_ciliente);
+				}while(validar_nombre(nombre_ciliente));
+				
+				rewind(clientef);
+				fread(&clientef, sizeof(struct datos_clientes),1,Ptr_fileTxt);
+				
+				while(!feof(clientef))
+				{
+					if(strcmp(clientef.nombre,nombre_ciliente))
+					{
+						modificar_menu(Ptr_fileTxt,&clientef,3);
+						encontrado = false;
+					}
+				}
+				if(encontrado)
+					printf(rojo"El nombre ingresado no existe\n"reset);
+				
+				break;
+			case 2:
+				do
+				{
+					fflush(stdin);
+					printf("Ingrese el telefono del cliente a modficar\n");
+					gets(telefono_ciliente);
+				}while(validar_telefono(telefono_ciliente));
+				
+				rewind(clientef);
+				fread(&clientef, sizeof(struct datos_clientes),1,Ptr_fileTxt);
+				
+				while(!feof(clientef))
+				{
+					if(strcmp(clientef.telefono,telefono_ciliente))
+					{
+						modificar_menu(Ptr_fileTxt,&clientef,2);
+						encontrado = false;
+					}
+				}
+				if(encontrado)
+					printf(rojo"El telefono ingresado no existe\n"reset);
+				break;
+			case 4:
+				printf("Gracias por usar el programa\n");
+				break;
+		}
+		
+	}while(opc_consulta != 4);
+	
+}
+
+void modificar_menu(FILE *Ptr_fileTxt, struct datos_clientes *c, int n)
+{
+	char telefono_nuevo[10],nombre_nuevo[100];
+	int opc_consulta;
+	do
+	{
+		printf("%20s\n", "Que desea modficar del cliente: ");
+		printf("%-15s\n","1.-Telefono");
+		printf("%-15s\n","2.-Nombre");
+		printf("%-15s\n","3.-Salir");
+		scanf("%d",&opc_consulta);
+	}while(opc_consulta < 1 || opc_consulta > 3);
+	
+	switch(n)
+	{
+		case 1:
+			fflush(stdin);
+			printf("Ingrese el nuevo telefono del cliente\n");
+			gets(telefono_nuevo);
+			c.telefono = telefono_nuevo;
+			break;
+		case 2:
+			fflush(stdin);
+			printf("Ingrese el nuevo nombre del cliente\n");
+			gets(nombre_nuevo);
+			c.nombre = nombre_nuevo;
+			break;
+		case 3:
+			printf("Gracias por usar el programa\n");
+			break;
+	}
 }
 
 void espacios_blancos(FILE*Ptr_ClientesdatF)
