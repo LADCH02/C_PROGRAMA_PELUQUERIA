@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
+
 #define rojo "\033[0;31m"
 #define reset "\033[0m"
 
@@ -39,7 +40,7 @@ void agregar_cliente(FILE*);
 void consultar(FILE*);
 void modificar_ciliente(FILE*);
 void espacios_blancos(FILE*);
-void modificar_menu(FILE *, struct datos_clientes *c,);
+void modificar_menu(FILE *, struct datos_clientes *c);
 bool validar_telefono(char *);
 
 main()
@@ -459,7 +460,7 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 				
 				if(clientef.clave == clave_ciliente)
 				{
-					modificar_menu(Ptr_fileTxt, &clientef, 1);
+					modificar_menu(Ptr_fileTxt, &clientef);
 				}
 				else
 					printf(rojo"La clave ingresada no existe\n"reset);
@@ -479,7 +480,7 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 				{
 					if(strcmp(clientef.nombre,nombre_ciliente))
 					{
-						modificar_menu(Ptr_fileTxt,&clientef,3);
+						modificar_menu(Ptr_fileTxt,&clientef);
 						encontrado = false;
 					}
 				}
@@ -502,7 +503,7 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 				{
 					if(strcmp(clientef.telefono,telefono_ciliente))
 					{
-						modificar_menu(Ptr_fileTxt,&clientef,2);
+						modificar_menu(Ptr_fileTxt,&clientef);
 						encontrado = false;
 					}
 				}
