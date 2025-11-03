@@ -218,30 +218,44 @@ bool validar_clave(int *clavef)
 }
 
 bool validar_nombre(char *nombref)
-{
+{	
 	int i=0;
-	bool estado = false;
+	bool estado_letras = false, estado = false, estado_vacio = false;
+	
+	if(strlen(nombref) < 1)
+    {
+        printf(rojo"ERROR: El nombre no puede estar vacio \a\n"reset);
+        estado  = true;
+    }
+	
 	while(*(nombref + i) != '\0')
-	{
-
+	{			
 		
 		if(!(*(nombref + i) >= 'A' && *(nombref + i) <= 'Z' || *(nombref + i) >= 'a' && *(nombref + i) <= 'z' || *(nombref + i) == 32))
-		{
-			printf(rojo"ERROR ingrese solo letras y espacios \a\n"reset);
-			estado = true;
-		}
 		
-		if(!(*(nombref + i) >= 'A' && *(nombref + i) <= 'Z' || *(nombref + i) >= 'a' && *(nombref + i) <= 'z'))
-		{
-			printf(rojo"ERROR ingresaste solo espacios \a\n"reset);
-			estado = true;
-		}
+			estado_letras = true;
+		
+		
+		if(*nombref == 32) 
+		
+			estado_vacio = true;
+		
 		i++;
+		
+	}
+	if(estado_vacio)
+	{
+		printf(rojo"ERROR ingresaste un espacio al principio \a\n"reset);
+		estado = true;
 	}
 	
-    
+	if(estado_letras)
+	{
+		printf(rojo"ERROR ingrese solo letras y espacios \a\n"reset);
+		estado = true;
+	}
+		
     return estado;
-
 }
 
 void agregar_cliente(FILE* Ptr_Clientesdatf )
