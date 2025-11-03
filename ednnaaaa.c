@@ -6,7 +6,7 @@
 #define rojo "\033[0;31m"
 #define reset "\033[0m"
 
-struct datos_dirrecciones{
+struct datos_direcciones{
 	char calle[100];
 	int num_exterior;
 	char colonia[100];
@@ -26,9 +26,18 @@ struct datos_clientes{
 	struct fecha fecha_nacimiento;
 	char telefono[15];
 	char correo[100];
-	struct datos_dirrecciones direccion_cliente;
+	struct datos_direcciones direccion_cliente;
 };
 
+struct datos_empleados{
+	int clave;
+	char nombre[100];
+	char puesto[100];
+	struct fecha fecha_contratacion;
+	char telefono[15];
+	char correo[150];
+	struct datos_direcciones direccion_empleado;
+};
 
 
 bool validar_sub_menu(char );
@@ -39,7 +48,7 @@ void clientes(FILE*);
 void agregar_cliente(FILE*);
 void consultar(FILE*);
 void modificar_ciliente(FILE*);
-void espacios_blancos(FILE*);
+void espacios_blancos(FILE*,FILE*);
 void modificar_menu(FILE *, struct datos_clientes *c);
 bool validar_telefono(char *);
 
@@ -48,9 +57,9 @@ main()
 	
 	int opcMain;
 	char opc_sub_menu;
-	FILE *ptr_clientesdat;
+	FILE *ptr_clientesdat, *ptr_empleadosdat;
 	
-	espacios_blancos(ptr_clientesdat);
+	espacios_blancos(ptr_clientesdat, ptr_empleadosdat);
 	
 	
 	do
@@ -560,16 +569,20 @@ void modificar_menu(FILE *Ptr_fileTxt, struct datos_clientes *c )
 	}
 }
 
-void espacios_blancos(FILE*Ptr_ClientesdatF)
+void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF)
 {	
 	struct fecha fecha_blanco = {0,0,0};
-	struct datos_dirrecciones direccion_blanco ={" " ,0," "," "," " };
+	struct datos_direcciones direccion_blanco ={" " ,0," "," "," " };
 	struct datos_clientes cliente_blanco={0," ",fecha_blanco," "," ", direccion_blanco};
+	struct datos_empleados empleados_blanco={0," "," ",fecha_blanco," "," ",direccion_blanco};
+
+
 	int i;
 	
+	//erchivo binario clientes
 	if((Ptr_ClientesdatF = fopen("clientes1.dat","r+"))== NULL) 
 	{
-		printf("No se encontro archivo....creando\n");
+		printf("No se encontro archivo clientes....creando archivo clientes\n");
 		Ptr_ClientesdatF = fopen("clientes1.dat","w");
 		
 		for(i=0; i<100; i++)
@@ -578,5 +591,20 @@ void espacios_blancos(FILE*Ptr_ClientesdatF)
 		fclose(Ptr_ClientesdatF);
 	}
 	else
-		printf("archivo encontrado\n");
+		printf("archivo clientes encontrado\n");
+	
+	//archivo binario empleados
+	if((Ptr_EmpleadosdatF = fopen("empleados.dat","r+"))== NULL) 
+	{
+		printf("No se encontro archivo empleados....creando archivo empleados\n");
+		Ptr_EmpleadosdatF = fopen("empleados.dat","w");
+		
+		for(i=0; i<100; i++)
+			fwrite(&empleados_blanco, sizeof(struct datos_clientes), 1, Ptr_EmpleadosdatF);
+		
+		fclose(Ptr_EmpleadosdatF);
+	}
+	else
+		printf("archivo empleados encontrado\n");
+		
 }
