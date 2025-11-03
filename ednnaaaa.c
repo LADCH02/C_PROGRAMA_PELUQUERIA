@@ -39,8 +39,7 @@ struct datos_empleados{
 	struct datos_direcciones direccion_empleado;
 };
 
-//funciones usadas para empleados
-void empleados(FILE*);
+
 
 // funciones usadas para clientes
 bool validar_sub_menu(char );
