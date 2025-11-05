@@ -54,6 +54,8 @@ void espacios_blancos(FILE*,FILE*);
 void modificar_menu(FILE *, struct datos_clientes *c);
 bool validar_telefono(char *);
 void borrar_cliente(FILE*);
+bool validar_existencia_clave(int *, FILE *);
+
 
 main()
 {
@@ -112,64 +114,63 @@ void clientes(FILE* Ptr_fileClient)
 {
 	char opc_sub_menu;
 	
-	
 	do
 	{
-		printf("%20s\n", "Clientes");
-		printf("%-15s\n","A.-Agregar");
-		printf("%-15s\n","C.-Consultar");
-		printf("%-15s\n","M.-Modificar");
-		printf("%-15s\n","D.-Borrar");
-		printf("%-15s\n","S.-Salir");
-		fflush(stdin);
-		scanf("%c", &opc_sub_menu);
-					
-
-	}while((validar_sub_menu(opc_sub_menu)));
-	
-	switch (opc_sub_menu)
-	{
-		case 'a' : case 'A':
-		if((Ptr_fileClient = fopen("clientes1.dat","r+")) == NULL)
-			printf("No se abrio el archivo");
-		else
+		do
 		{
-			agregar_cliente(Ptr_fileClient);
-			fclose(Ptr_fileClient);
-		}
-		break;	
+			printf("%20s\n", "Clientes");
+			printf("%-15s\n","A.-Agregar");
+			printf("%-15s\n","C.-Consultar");
+			printf("%-15s\n","M.-Modificar");
+			printf("%-15s\n","D.-Borrar");
+			printf("%-15s\n","S.-Salir");
+			fflush(stdin);
+			scanf("%c", &opc_sub_menu);
+		}while((validar_sub_menu(opc_sub_menu)));
 		
-		case 'c' : case'C': 
-		if((Ptr_fileClient = fopen("clientes1.dat","r+")) == NULL)
-			printf("No se abrio el archivo");
-		else
+		switch (opc_sub_menu)
 		{
-			consultar(Ptr_fileClient);
-			fclose(Ptr_fileClient);
-		}
-		break;
-		
-		case 'm' : case'M': 
-		if((Ptr_fileClient = fopen("clientes1.dat","r+")) == NULL)
-			printf("No se abrio el archivo");
-		else
-		{
-			modificar_ciliente(Ptr_fileClient);
-			fclose(Ptr_fileClient);
-		}
-		break;	
-		
-		case 'd': case'D':
-		if((Ptr_fileClient = fopen("clientes1.dat","r+")) == NULL)
-			printf("No se abrio el archivo");
-		else
-		{
-			borrar_cliente(Ptr_fileClient);
-			fclose(Ptr_fileClient);
-		}
-				
-	}
+			case 'a' : case 'A':
+			if((Ptr_fileClient = fopen("clientes1.dat","r+")) == NULL)
+				printf("No se abrio el archivo");
+			else
+			{
+				agregar_cliente(Ptr_fileClient);
+				fclose(Ptr_fileClient);
+			}
+			break;	
 			
+			case 'c' : case'C': 
+			if((Ptr_fileClient = fopen("clientes1.dat","r+")) == NULL)
+				printf("No se abrio el archivo");
+			else
+			{
+				consultar(Ptr_fileClient);
+				fclose(Ptr_fileClient);
+			}
+			break;
+			
+			case 'm' : case'M': 
+			if((Ptr_fileClient = fopen("clientes1.dat","r+")) == NULL)
+				printf("No se abrio el archivo");
+			else
+			{
+				modificar_ciliente(Ptr_fileClient);
+				fclose(Ptr_fileClient);
+			}
+			break;	
+			
+			case 'd': case'D':
+			if((Ptr_fileClient = fopen("clientes1.dat","r+")) == NULL)
+				printf("No se abrio el archivo");
+			else
+			{
+				borrar_cliente(Ptr_fileClient);
+				fclose(Ptr_fileClient);
+			}
+					
+		}
+	}while(opc_sub_menu != 'S' && opc_sub_menu != 's');
 				
 }
 
@@ -207,15 +208,37 @@ bool validar_siono(char *sionof, int opcf)
 
 bool validar_clave(int *clavef)
 {
+	
 	bool cambio = false;
 	getchar();
 	if(*clavef < 1 || *clavef > 100)
 	{	
-		return cambio = true;
+		printf(rojo"ERROR: Ingresa una clave que este entre el 1 - 100 \a\n"reset);
+		cambio = true;
 		getchar();
 	}
+
 	return cambio;
 }
+
+bool validar_existencia_clave(int *clavef, FILE *ptrf)
+{
+	struct datos_clientes clientesf;
+	bool	cambio = false;
+	while(!feof(ptrf))
+	{
+		fread(&clientesf, sizeof(struct datos_clientes), 1, ptrf);	
+		if(*clavef == clientesf.clave)
+		{
+			printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
+			cambio = true;
+		}
+	}
+	rewind(ptrf);
+	
+	return cambio;
+}
+
 
 bool validar_nombre(char *nombref)
 {	
@@ -268,8 +291,9 @@ void agregar_cliente(FILE* Ptr_Clientesdatf )
 		do
 		{
 			printf("Ingresa la clave del cliente: \n");
+			fflush(stdin);
 			scanf("%d", &cliente.clave);
-		}while(validar_clave(&cliente.clave));
+		}while(validar_clave(&cliente.clave) || validar_existencia_clave(&cliente.clave, Ptr_Clientesdatf));
 		
 		do
 		{
@@ -305,24 +329,36 @@ void agregar_cliente(FILE* Ptr_Clientesdatf )
 		
 		printf("--- Direccion ---\n");
 		
-		printf("Ingrese calle: \n");
-		fflush(stdin);
-		gets(cliente.direccion_cliente.calle);
+		do
+		{
+			printf("Ingrese calle: \n");
+			fflush(stdin);
+			gets(cliente.direccion_cliente.calle);
+		}while(validar_nombre(cliente.direccion_cliente.calle));
 		
 		printf("Ingrese el numero exterior: \n");
 		scanf("%d",&cliente.direccion_cliente.num_exterior);
 		
-		printf("Ingrese colonia: \n");
-		fflush(stdin);
-		gets(cliente.direccion_cliente.colonia);
+		do
+		{
+			printf("Ingrese colonia: \n");
+			fflush(stdin);
+			gets(cliente.direccion_cliente.colonia);	
+		}while(validar_nombre(cliente.direccion_cliente.colonia));
+
+		do
+		{
+			printf("Ingrese municipio: \n");
+			fflush(stdin);
+			gets(cliente.direccion_cliente.municipio);
+		}while(validar_nombre(cliente.direccion_cliente.municipio));
 		
-		printf("Ingrese municipio: \n");
-		fflush(stdin);
-		gets(cliente.direccion_cliente.municipio);
-		
-		printf("Ingrese estado: \n");
-		fflush(stdin);
-		gets(cliente.direccion_cliente.estado);
+		do
+		{
+			printf("Ingrese estado: \n");
+			fflush(stdin);
+			gets(cliente.direccion_cliente.estado);	
+		}while(validar_nombre(cliente.direccion_cliente.estado));
 		
 		fseek(Ptr_Clientesdatf, (cliente.clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
 		fwrite(&cliente, sizeof(struct datos_clientes), 1, Ptr_Clientesdatf);
@@ -384,7 +420,7 @@ void consultar(FILE* Ptr_fileTxt)
 			case 1:
 				do
 				{
-					printf("Ingrese la clave del ciliente a consultar\n");
+					printf("Ingrese la clave del cliente a consultar\n");
 					scanf("%d",&clave_ciliente);
 				}while(validar_clave(&clave_ciliente));
 				
@@ -528,7 +564,7 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 				do
 				{
 					fflush(stdin);
-					printf("Ingrese el telefono del cliente a modficar\n");
+					printf("Ingrese el telefono del cliente a modificar\n");
 					gets(telefono_ciliente);
 				}while(validar_telefono(telefono_ciliente));
 				
@@ -659,3 +695,6 @@ void borrar_cliente(FILE*ptr_datfilef)
 		printf("Usuario no encontrado....");
 	
 }
+
+
+
