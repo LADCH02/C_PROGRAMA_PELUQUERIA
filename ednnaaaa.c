@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 
 #define rojo "\033[0;31m"
 #define reset "\033[0m"
@@ -46,6 +47,7 @@ bool validar_sub_menu(char );
 bool validar_siono(char *, int);
 bool validar_clave(int *);
 bool validar_nombre(char *);
+bool validar_fecha(struct fecha *);
 void clientes(FILE*);
 void agregar_cliente(FILE*);
 void consultar(FILE*);
@@ -210,12 +212,10 @@ bool validar_clave(int *clavef)
 {
 	
 	bool cambio = false;
-	getchar();
 	if(*clavef < 1 || *clavef > 100)
 	{	
 		printf(rojo"ERROR: Ingresa una clave que este entre el 1 - 100 \a\n"reset);
 		cambio = true;
-		getchar();
 	}
 
 	return cambio;
@@ -302,16 +302,18 @@ void agregar_cliente(FILE* Ptr_Clientesdatf )
 			gets(cliente.nombre);
 		}while(validar_nombre(cliente.nombre));
 		
-	
-		printf("--- Fecha de nacimiento ---\n");
-		printf("Ingrese dia: \n");
-		scanf("%d",&cliente.fecha_nacimiento.dia);
+		do
+		{
+			printf("--- Fecha de nacimiento ---\n");
+			printf("Ingrese dia: \n");
+			scanf("%d",&cliente.fecha_nacimiento.dia);
 			
-		printf("Ingrese mes: \n");
-		scanf("%d",&cliente.fecha_nacimiento.mes);
+			printf("Ingrese mes: \n");
+			scanf("%d",&cliente.fecha_nacimiento.mes);
 			
-		printf("Ingrese anio: \n");
-		scanf("%d",&cliente.fecha_nacimiento.ano);
+			printf("Ingrese anio: \n");
+			scanf("%d",&cliente.fecha_nacimiento.ano);			
+		}while(validar_fecha(&cliente.fecha_nacimiento));
 		
 		do
 		{
@@ -394,6 +396,71 @@ bool validar_telefono(char *ftelefono)
 	
 	
 	return false;
+}
+
+bool validar_fecha(struct fecha *fecha_f) 
+{
+    time_t tiempoSeg = time(NULL);
+    struct tm *tm_info = localtime(&tiempoSeg);
+    int dias_por_mes[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    bool cambio = false;
+    
+    struct fecha fecha_actual = {
+        tm_info->tm_mday,
+        tm_info->tm_mon + 1, 
+        tm_info->tm_year + 1900 
+    };
+    
+
+    if (fecha_f->ano < 1900 || fecha_f->ano > fecha_actual.ano) {
+        printf(rojo"ERROR: El a%co debe estar entre 1900 y %d \a\n"reset, 164, fecha_actual.ano);
+        cambio = true;
+    }
+    
+
+    if (fecha_f->mes < 1 || fecha_f->mes > 12) {
+        printf(rojo"ERROR: El mes debe estar entre 1 y 12 \a\n"reset);
+        cambio = true;
+    }
+
+    if (fecha_f->mes == 2) 
+	{
+        if ((fecha_f->ano % 4 == 0 && fecha_f->ano % 100 != 0) || (fecha_f->ano % 400 == 0)) 
+		{
+            dias_por_mes[1] = 29;
+        } 
+		else 
+		{
+            dias_por_mes[1] = 28;
+        }
+    }
+    
+    if (fecha_f->dia < 1 || fecha_f->dia > dias_por_mes[fecha_f->mes - 1]) 
+	{
+        printf(rojo"ERROR: El dia %d no es valido para el mes %d del a%co %d \a\n"reset, fecha_f->dia, fecha_f->mes, 164, fecha_f->ano);
+        cambio = true;
+    }
+    
+    if (fecha_f->ano > fecha_actual.ano) 
+	{
+        printf(rojo"ERROR: No puedes ingresar una fecha futura \a\n"reset);
+        cambio = true;
+    } 
+	else if (fecha_f->ano == fecha_actual.ano) 
+	{
+        if (fecha_f->mes > fecha_actual.mes) 
+		{
+            printf(rojo"ERROR: No puedes ingresar una fecha futura \a\n"reset);
+            cambio = true;
+        } 
+		else if (fecha_f->mes == fecha_actual.mes && fecha_f->dia > fecha_actual.dia) 
+		{
+            printf(rojo"ERROR: No puedes ingresar una fecha futura \a\n"reset);
+            cambio = true;
+        }
+    }
+    
+    return cambio; 
 }
 
 void consultar(FILE* Ptr_fileTxt)
@@ -607,9 +674,12 @@ void modificar_menu(FILE *Ptr_fileTxt, struct datos_clientes *c )
 	switch(opc_consulta)
 	{
 		case 1:
-			fflush(stdin);
-			printf("Ingrese el nuevo telefono del cliente\n");
-			gets(telefono_nuevo);
+			do
+			{
+				fflush(stdin);
+				printf("Ingrese el nuevo telefono del cliente\n");
+				gets(telefono_nuevo);
+			}while(validar_telefono(telefono_nuevo));
 			strcpy(c->telefono, telefono_nuevo);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
 			fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
@@ -617,9 +687,13 @@ void modificar_menu(FILE *Ptr_fileTxt, struct datos_clientes *c )
 
 			break;
 		case 2:
-			fflush(stdin);
-			printf("Ingrese el nuevo nombre del cliente\n");
-			gets(nombre_nuevo);
+			do
+			{
+				fflush(stdin);
+				printf("Ingrese el nuevo nombre del cliente\n");
+				gets(nombre_nuevo);
+			}while(validar_nombre(nombre_nuevo));
+			
 			strcpy(c->nombre, nombre_nuevo);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
 			fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
@@ -679,8 +753,12 @@ void borrar_cliente(FILE*ptr_datfilef)
 	struct datos_clientes cliente_blanco={0," ",fecha_blanco," "," ", direccion_blanco}, clientef;
 	int del_clave;
 	
-	printf("ingrese la clave del usuario a eliminar: \n");
-	scanf("%d",&del_clave);
+	do
+	{
+		fflush(stdin);
+		printf("ingrese la clave del usuario a eliminar: \n");
+		scanf("%d",&del_clave);
+	}while(validar_clave(&del_clave));
 	
 	fseek(ptr_datfilef, (del_clave-1)*sizeof(struct datos_clientes),SEEK_SET);
 	fread(&clientef, sizeof(struct datos_clientes),1,ptr_datfilef);
