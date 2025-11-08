@@ -807,10 +807,10 @@ void borrar_empleado(FILE*ptr_datfilef)
 	{
 		fseek(ptr_datfilef, (del_clave-1)*sizeof(struct datos_empleados),SEEK_SET);
 		fwrite(&empleado_blanco, sizeof(struct datos_empleados),1,ptr_datfilef);
-		printf("Usuario eliminado con exito...");	
+		printf("Empleado eliminado con exito...");	
 	}
 	else 
-		printf("Usuario no encontrado....");
+		printf("Empleado no encontrado....");
 	
 }
 
