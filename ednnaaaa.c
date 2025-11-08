@@ -72,7 +72,6 @@ bool validar_existencia_clave_empleado(int *, FILE *);
 void espacios_blancos(FILE*,FILE*);
 void modificar_menu(FILE *, struct datos_clientes *c);
 
-void espacios_blancos(FILE*,FILE*);
 
 
 main()
@@ -258,10 +257,6 @@ void empleados(FILE* Ptr_fileempleado)
 				
 }
 
-
-
-
-
 bool validar_siono(char *sionof, int opcf)
 {
 	int i=0;
@@ -324,6 +319,7 @@ bool validar_existencia_clave(int *clavef, FILE *ptrf)
 	
 	return cambio;
 }
+
 bool validar_existencia_clave_empleado(int *clavef, FILE *ptrf)
 {
 	struct datos_empleados empleadof;
@@ -341,7 +337,6 @@ bool validar_existencia_clave_empleado(int *clavef, FILE *ptrf)
 	
 	return cambio;
 }
-
 
 bool validar_nombre(char *nombref)
 {	
@@ -383,8 +378,6 @@ bool validar_nombre(char *nombref)
 		
     return estado;
 }
-
-
 
 void agregar_cliente(FILE* Ptr_Clientesdatf )
 {
@@ -486,7 +479,6 @@ void agregar_cliente(FILE* Ptr_Clientesdatf )
 		
 	}while(validar_siono(siono, 2));
 }
-
 
 void agregar_empleado(FILE* Ptr_empleadosdatf)
 {
@@ -596,7 +588,6 @@ void agregar_empleado(FILE* Ptr_empleadosdatf)
 	}while(validar_siono(siono, 2));
 }
 
-
 void consultar_empleado(FILE* Ptr_empleadosdatf)
 {
 	struct datos_empleados empleadof={0};
@@ -699,7 +690,6 @@ void consultar_empleado(FILE* Ptr_empleadosdatf)
 	}while(opc_consulta != 4);
 }
 
-
 void modificar_empleado(FILE* Ptr_empleadosdatf)
 {
 	struct datos_empleados empleadof={0};
@@ -792,7 +782,6 @@ void modificar_empleado(FILE* Ptr_empleadosdatf)
 	}while(opc_consulta != 4);
 	
 }
-
 
 bool validar_telefono(char *ftelefono)
 {
