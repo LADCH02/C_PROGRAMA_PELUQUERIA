@@ -21,7 +21,14 @@ struct fecha{
 	int ano;		
 };
 
-struct datos_clientes{
+struct tiempo
+{
+	int hora;
+	int minutos;
+}
+
+struct datos_clientes
+{
 	int clave;
 	char nombre[100];
 	struct fecha fecha_nacimiento;
@@ -30,7 +37,8 @@ struct datos_clientes{
 	struct datos_direcciones direccion_cliente;
 };
 
-struct datos_empleados{
+struct datos_empleados
+{
 	int clave;
 	char nombre[100];
 	char puesto[100];
@@ -40,9 +48,17 @@ struct datos_empleados{
 	struct datos_direcciones direccion_empleado;
 };
 
+struct datos_servicios
+{
+	int clave;
+	char descripcion[100];
+	float precio;
+	struct tiempo duracion;
+}
 
 
-// funciones usadas para clientes
+
+// funciones para validar
 bool validar_sub_menu(char );
 bool validar_siono(char *, int);
 bool validar_clave(int *);
@@ -50,11 +66,10 @@ bool validar_nombre(char *);
 bool validar_fecha(struct fecha *);
 bool validar_telefono(char *);
 bool validar_num_casa(int *);
-
 bool validar_puesto(char *);
 
 
-
+// funciones usadas para clientes
 void clientes(FILE*);
 void agregar_cliente(FILE*);
 void consultar(FILE*);
@@ -69,9 +84,12 @@ void consultar_empleado(FILE*);
 void modificar_empleado(FILE*);
 bool validar_existencia_clave_empleado(int *, FILE *);
 
+// funciones usadas para servicios
+
+
 
 // Espacios
-void espacios_blancos(FILE*,FILE*);
+void espacios_blancos(FILE*,FILE*,FILE*);
 void modificar_menu(FILE *, struct datos_clientes *c);
 
 
@@ -81,9 +99,9 @@ main()
 	
 	int opcMain;
 	char opc_sub_menu;
-	FILE *ptr_clientesdat, *ptr_empleadosdat;
+	FILE *ptr_clientesdat, *ptr_empleadosdat, *ptr_serviciosdat;
 	
-	espacios_blancos(ptr_clientesdat, ptr_empleadosdat);
+	espacios_blancos(ptr_clientesdat, ptr_empleadosdat, ptr_serviciosdat);
 	
 	
 	do
@@ -110,6 +128,9 @@ main()
 				break;
 			case 2:
 				empleados(ptr_empleadosdat);
+				break;
+			case 3:
+				servicios(ptr_serviciosdat);
 				break;
 				
 		}
@@ -258,6 +279,7 @@ void empleados(FILE* Ptr_fileempleado)
 	}while(opc_sub_menu != 'S' && opc_sub_menu != 's');
 				
 }
+
 
 bool validar_siono(char *sionof, int opcf)
 {
@@ -785,7 +807,6 @@ void modificar_empleado(FILE* Ptr_empleadosdatf)
 	
 }
 
-
 void borrar_empleado(FILE*ptr_datfilef)
 {
 	struct fecha fecha_blanco = {0,0,0};
@@ -813,7 +834,6 @@ void borrar_empleado(FILE*ptr_datfilef)
 		printf("Empleado no encontrado....");
 	
 }
-
 
 bool validar_telefono(char *ftelefono)
 {
@@ -1252,12 +1272,14 @@ void modificar_menu(FILE *Ptr_fileTxt, struct datos_clientes *c )
 	}
 }
 
-void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF)
+void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_ServiciosdatF)
 {	
 	struct fecha fecha_blanco = {0,0,0};
+	struct tiempo tiempo_blanco = {0,0};
 	struct datos_direcciones direccion_blanco ={" " ,0," "," "," " };
 	struct datos_clientes cliente_blanco={0," ",fecha_blanco," "," ", direccion_blanco};
 	struct datos_empleados empleados_blanco={0," "," ",fecha_blanco," "," ",direccion_blanco};
+	struct datos_servicios servicios_blanco={0," "," ",0,tiempo_blanco};
 
 
 	int i;
@@ -1289,6 +1311,20 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF)
 	}
 	else
 		printf("archivo empleados encontrado\n");
+		
+	//archivo binario servicios
+	if((Ptr_ServiciosdatF = fopen("servicios.dat","r+"))== NULL) 
+	{
+		printf("No se encontro archivo servicios....creando archivo servicios\n");
+		Ptr_ServiciosdatF = fopen("servicios.dat","w");
+		
+		for(i=0; i<100; i++)
+			fwrite(&servicios_blanco, sizeof(struct datos_servicios), 1, Ptr_ServiciosdatF);
+		
+		fclose(Ptr_ServiciosdatF);
+	}
+	else
+		printf("archivo servicios encontrado\n");
 		
 }
 
