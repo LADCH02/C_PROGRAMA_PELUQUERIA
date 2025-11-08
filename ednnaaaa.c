@@ -1499,11 +1499,11 @@ bool validar_duracion(struct tiempo *tiempo_f)
     if (tiempo_f->minutos < 0 || tiempo_f->minutos > 59) 
 	{
         printf("Error: los minutos deben estar entre 0 y 59.\n");
-        salir = true; // inválido ? repetir
+        salir = true;
     }
     if (tiempo_f->hora < 0) {
         printf("Error: la hora no puede ser negativa.\n");
-        salir = true; // inválido ? repetir
+        salir = true;
     }
 
     if (tiempo_f->hora == 0 && tiempo_f->minutos == 0) {
