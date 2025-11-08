@@ -91,7 +91,7 @@ void agregar_servicios(FILE*);
 void consultar_servicios(FILE*);
 void modificar_servicios(FILE*);
 void borrar_servicios(FILE*);
-bool validar_existencia_clave_servicios(int *, FILE *);
+bool validar_existencia_clave_servicio(int *, FILE *);
 
 // Espacios
 void espacios_blancos(FILE*,FILE*,FILE*);
@@ -429,8 +429,24 @@ bool validar_existencia_clave_empleado(int *clavef, FILE *ptrf)
 	return cambio;
 }
 
-
-
+bool validar_existencia_clave_servicio(int *clavef, FILE *ptrf)
+{
+	struct datos_servicios serviciof;
+	bool	cambio = false;
+	
+	while(!feof(ptrf))
+	{
+		fread(&serviciof, sizeof(struct datos_servicios), 1, ptrf);	
+		if(*clavef == serviciof.clave)
+		{
+			printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
+			cambio = true;
+		}
+	}
+	rewind(ptrf);
+	
+	return cambio;
+}
 
 bool validar_nombre(char *nombref)
 {	
@@ -1349,7 +1365,7 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 	struct datos_direcciones direccion_blanco ={" " ,0," "," "," " };
 	struct datos_clientes cliente_blanco={0," ",fecha_blanco," "," ", direccion_blanco};
 	struct datos_empleados empleados_blanco={0," "," ",fecha_blanco," "," ",direccion_blanco};
-	struct datos_servicios servicios_blanco={0," "," ",0,tiempo_blanco};
+	struct datos_servicios servicios_blanco={0," ",0.0,tiempo_blanco};
 
 
 	int i;
@@ -1427,6 +1443,54 @@ void borrar_cliente(FILE*ptr_datfilef)
 }
 
 
+void agregar_servicio(FILE* Ptr_Serviciosdatf)
+{
+	struct datos_servicios servicio;
+	char siono[3];
+	
+	do
+	{
+		do
+		{
+			printf("Ingresa la clave del servicio: \n");
+			fflush(stdin);
+			scanf("%d", &servicio.clave);
+		}while(validar_clave(&servicio.clave) || validar_existencia_clave_servicio(&servicio.clave, Ptr_Serviciosdatf));
+		
+		do
+		{
+			printf("Ingresa una descripcion del servicio: \n");
+			fflush(stdin);
+			gets(servicio.descripcion);
+		}while(validar_nombre(servicio.descripcion));
+		
+		do
+		{
+			fflush(stdin);
+			printf("--- Ingrese la duracion del servicio ---\n");
+			printf("Ingrese hora: \n");
+			scanf("%d",&servicio.duracion.hora);
+			
+			printf("Ingrese minutos: \n");
+			scanf("%d",&servicio.duracion.minutos);
+						
+		}while(validar_duracion(&servicio.duracion));
+		
+		do
+		{
+			printf("Ingresa el precio del servicio: \n");
+			scanf("%f",&servicio.precio);
+		}while(validar_precio(servicio.precio));
+		
+		do
+		{
+			printf("Desea agregar un nuevo regristro (Si/No): \n");
+			fflush(stdin);
+			gets(siono);	
+		}while(validar_siono(siono, 1));
+		
+	}while(validar_siono(siono, 2));
+}
 
 
 
