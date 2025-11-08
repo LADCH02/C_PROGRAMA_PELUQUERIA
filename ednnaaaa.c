@@ -51,6 +51,8 @@ bool validar_fecha(struct fecha *);
 bool validar_telefono(char *);
 bool validar_num_casa(int *);
 
+bool validar_puesto(char *);
+
 
 
 void clientes(FILE*);
@@ -64,6 +66,8 @@ void empleados(FILE*);
 void agregar_empleado(FILE*);
 void consultar_empleado(FILE*);
 void modificar_empleado(FILE*);
+bool validar_existencia_clave_empleado(int *, FILE *);
+
 
 void espacios_blancos(FILE*,FILE*);
 void modificar_menu(FILE *, struct datos_clientes *c);
@@ -215,7 +219,7 @@ void empleados(FILE* Ptr_fileempleado)
 				printf("No se abrio el archivo");
 			else
 			{
-				agregar_cliente(Ptr_fileempleado);
+				agregar_empleado(Ptr_fileempleado);
 				fclose(Ptr_fileempleado);
 			}
 			break;	
@@ -311,6 +315,23 @@ bool validar_existencia_clave(int *clavef, FILE *ptrf)
 	{
 		fread(&clientesf, sizeof(struct datos_clientes), 1, ptrf);	
 		if(*clavef == clientesf.clave)
+		{
+			printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
+			cambio = true;
+		}
+	}
+	rewind(ptrf);
+	
+	return cambio;
+}
+bool validar_existencia_clave_empleado(int *clavef, FILE *ptrf)
+{
+	struct datos_empleados empleadof;
+	bool	cambio = false;
+	while(!feof(ptrf))
+	{
+		fread(&empleadof, sizeof(struct datos_empleados), 1, ptrf);	
+		if(*clavef == empleadof.clave)
 		{
 			printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
 			cambio = true;
@@ -476,17 +497,24 @@ void agregar_empleado(FILE* Ptr_empleadosdatf)
 	{
 		do
 		{
-			printf("Ingresa la clave del cliente: \n");
+			printf("Ingresa la clave del empleado: \n");
 			fflush(stdin);
 			scanf("%d", &empleado.clave);
-		}while(validar_clave(&empleado.clave) || validar_existencia_clave(&empleado.clave, Ptr_empleadosdatf));
+		}while(validar_clave(&empleado.clave) || validar_existencia_clave_empleado(&empleado.clave, Ptr_empleadosdatf));
 		
 		do
 		{
-			printf("Ingresa el nombre del cliente: \n");
+			printf("Ingresa el nombre del empleado: \n");
 			fflush(stdin);
 			gets(empleado.nombre);
 		}while(validar_nombre(empleado.nombre));
+		
+		do
+		{
+			printf("Ingresa el puesto del empleado: \n");
+			fflush(stdin);
+			gets(empleado.puesto);
+		}while(validar_puesto(empleado.puesto));
 		
 		do
 		{
@@ -504,14 +532,14 @@ void agregar_empleado(FILE* Ptr_empleadosdatf)
 		
 		do
 		{
-			printf("Ingresa el telefono del cliente: ");
+			printf("Ingresa el telefono del empleado: ");
 			fflush(stdin);
 			gets(empleado.telefono);
 		}while(validar_telefono(empleado.telefono));
 		
 		do
 		{
-			printf("ingrese correo electronico: \n");
+			printf("Ingrese correo electronico: \n");
 			fflush(stdin);
 			gets(empleado.correo);
 		}while(false);
@@ -603,8 +631,9 @@ void consultar_empleado(FILE* Ptr_empleadosdatf)
 				
 				if(empleadof.clave == clave_buscar)
 				{
-					printf("%-20s%-20s%-20s%-20s%-30s\n", "CLAVE", "NOMBRE", "FECHA DE CONTRATACION", "TELEFONO", "CORREO");
-					printf("%-20d%-20s%-2d/%-1d/%-3d%20s%30s\n", empleadof.clave, empleadof.nombre, empleadof.fecha_contratacion.dia, empleadof.fecha_contratacion.mes, empleadof.fecha_contratacion.ano, empleadof.telefono, empleadof.correo);
+					printf("%-20s%-20s%-20s%-20s%-20s%-30s\n", "CLAVE", "NOMBRE", "PUESTO","FECHA DE CONTRATACION", "TELEFONO", "CORREO");
+					printf("%-20d%-20s%-20s%-2d/%-1d/%-3d%20s%30s\n", empleadof.clave, empleadof.nombre, empleadof.puesto,  empleadof.fecha_contratacion.dia, empleadof.fecha_contratacion.mes, empleadof.fecha_contratacion.ano, empleadof.telefono, empleadof.correo);
+				
 				}
 				else
 					printf(rojo"La clave ingresada no existe\n"reset);
@@ -625,8 +654,8 @@ void consultar_empleado(FILE* Ptr_empleadosdatf)
 					
 					if(strcmp(empleadof.nombre,nombre_buscar) == 0 && !feof(Ptr_empleadosdatf))
 					{
-						printf("%-20s%-20s%-20s%-20s%-30s\n", "CLAVE", "NOMBRE", "FECHA DE CONTRATACION", "TELEFONO", "CORREO");
-						printf("%-20d%-20s%-2d/%-1d/%-3d%20s%30s\n", empleadof.clave, empleadof.nombre, empleadof.fecha_contratacion.dia, empleadof.fecha_contratacion.mes, empleadof.fecha_contratacion.ano, empleadof.telefono, empleadof.correo);
+						printf("%-20s%-20s%-20s%-20s%-20s%-30s\n", "CLAVE", "NOMBRE", "PUESTO","FECHA DE CONTRATACION", "TELEFONO", "CORREO");
+						printf("%-20d%-20s%-20s%-2d/%-1d/%-3d%20s%30s\n", empleadof.clave, empleadof.nombre, empleadof.puesto,  empleadof.fecha_contratacion.dia, empleadof.fecha_contratacion.mes, empleadof.fecha_contratacion.ano, empleadof.telefono, empleadof.correo);
 				
 						encontrado = false;
 					}
@@ -652,8 +681,8 @@ void consultar_empleado(FILE* Ptr_empleadosdatf)
 					
 					if(strcmp(empleadof.telefono,telefono_buscar) == 0 && !feof(Ptr_empleadosdatf))
 					{
-						printf("%-20s%-20s%-20s%-20s%-30s\n", "CLAVE", "NOMBRE", "FECHA DE CONTRATACION", "TELEFONO", "CORREO");
-						printf("%-20d%-20s%-2d/%-1d/%-3d%20s%30s\n", empleadof.clave, empleadof.nombre, empleadof.fecha_contratacion.dia, empleadof.fecha_contratacion.mes, empleadof.fecha_contratacion.ano, empleadof.telefono, empleadof.correo);
+						printf("%-20s%-20s%-20s%-20s%-20s%-30s\n", "CLAVE", "NOMBRE", "PUESTO","FECHA DE CONTRATACION", "TELEFONO", "CORREO");
+						printf("%-20d%-20s%-20s%-2d/%-1d/%-3d%20s%30s\n", empleadof.clave, empleadof.nombre, empleadof.puesto,  empleadof.fecha_contratacion.dia, empleadof.fecha_contratacion.mes, empleadof.fecha_contratacion.ano, empleadof.telefono, empleadof.correo);
 				
 						encontrado = false;
 					}
@@ -866,6 +895,25 @@ bool validar_fecha(struct fecha *fecha_f)
     }
     
     return cambio; 
+}
+
+bool validar_puesto(char *puestof)
+{
+	bool estado = false;
+	int i=0;
+	
+	while(*(puestof + i) != '\0')
+    {
+    	*(puestof + i) = toupper(*(puestof + i));
+    	i++;
+	}
+	
+	if(strcmp(puestof, "ESTILISTA") != 0 && strcmp(puestof, "COLORISTA") != 0 && strcmp(puestof, "RECEPCIONISTA") != 0 && strcmp(puestof, "COORDINADOR ") != 0 && strcmp(puestof, "MAQUILLADOR") != 0)
+    {
+        printf(rojo"ERROR: Ingresa un puesto existente(estilista, colorista, recepcionista, coordinador o maquillad) \a\n"reset);
+        estado  = true;
+    }
+	return estado;
 }
 
 void consultar(FILE* Ptr_fileTxt)
