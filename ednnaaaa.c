@@ -82,11 +82,16 @@ void empleados(FILE*);
 void agregar_empleado(FILE*);
 void consultar_empleado(FILE*);
 void modificar_empleado(FILE*);
+void borrar_empleado(FILE*);
 bool validar_existencia_clave_empleado(int *, FILE *);
 
 // funciones usadas para servicios
-
-
+void servicios(FILE*);
+void agregar_servicios(FILE*);
+void consultar_servicios(FILE*);
+void modificar_servicios(FILE*);
+void borrar_servicios(FILE*);
+bool validar_existencia_clave_servicios(int *, FILE *);
 
 // Espacios
 void espacios_blancos(FILE*,FILE*,FILE*);
@@ -280,6 +285,68 @@ void empleados(FILE* Ptr_fileempleado)
 				
 }
 
+void servicios(FILE* Ptr_fileservicio)
+{
+	char opc_sub_menu;
+	
+	do
+	{
+		do
+		{
+			printf("%20s\n", "Servicios");
+			printf("%-15s\n","A.-Agregar");
+			printf("%-15s\n","C.-Consultar");
+			printf("%-15s\n","M.-Modificar");
+			printf("%-15s\n","D.-Borrar");
+			printf("%-15s\n","S.-Salir");
+			fflush(stdin);
+			scanf("%c", &opc_sub_menu);
+		}while((validar_sub_menu(opc_sub_menu)));
+		
+		switch (opc_sub_menu)
+		{
+			case 'a' : case 'A':
+			if((Ptr_fileservicio = fopen("servicios.dat","r+")) == NULL)
+				printf("No se abrio el archivo");
+			else
+			{
+				agregar_servicio(Ptr_fileservicio);
+				fclose(Ptr_fileservicio);
+			}
+			break;	
+			
+			case 'c' : case'C': 
+			if((Ptr_fileservicio = fopen("servicios.dat","r+")) == NULL)
+				printf("No se abrio el archivo");
+			else
+			{
+				consultar_servicio(Ptr_fileservicio);
+				fclose(Ptr_fileservicio);
+			}
+			break;
+			
+			case 'm' : case'M': 
+			if((Ptr_fileservicio = fopen("servicios.dat","r+")) == NULL)
+				printf("No se abrio el archivo");
+			else
+			{
+				modificar_servicio(Ptr_fileservicio);
+				fclose(Ptr_fileservicio);
+			}
+			break;	
+			
+			case 'd': case'D':
+			if((Ptr_fileservicio = fopen("servicios.dat","r+")) == NULL)
+				printf("No se abrio el archivo");
+			else
+			{
+				borrar_servicio(Ptr_fileservicio);
+				fclose(Ptr_fileservicio);
+			}
+					
+		}
+	}while(opc_sub_menu != 'S' && opc_sub_menu != 's');
+}
 
 bool validar_siono(char *sionof, int opcf)
 {
@@ -361,6 +428,9 @@ bool validar_existencia_clave_empleado(int *clavef, FILE *ptrf)
 	
 	return cambio;
 }
+
+
+
 
 bool validar_nombre(char *nombref)
 {	
@@ -1355,6 +1425,8 @@ void borrar_cliente(FILE*ptr_datfilef)
 		printf("Usuario no encontrado....");
 	
 }
+
+
 
 
 
