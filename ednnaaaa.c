@@ -62,6 +62,7 @@ void modificar_ciliente(FILE*);
 void borrar_cliente(FILE*);
 bool validar_existencia_clave(int *, FILE *);
 
+// Funciones usadas para empleados
 void empleados(FILE*);
 void agregar_empleado(FILE*);
 void consultar_empleado(FILE*);
@@ -69,6 +70,7 @@ void modificar_empleado(FILE*);
 bool validar_existencia_clave_empleado(int *, FILE *);
 
 
+// Espacios
 void espacios_blancos(FILE*,FILE*);
 void modificar_menu(FILE *, struct datos_clientes *c);
 
@@ -248,7 +250,7 @@ void empleados(FILE* Ptr_fileempleado)
 				printf("No se abrio el archivo");
 			else
 			{
-				borrar_cliente(Ptr_fileempleado);
+				borrar_empleado(Ptr_fileempleado);
 				fclose(Ptr_fileempleado);
 			}
 					
@@ -782,6 +784,36 @@ void modificar_empleado(FILE* Ptr_empleadosdatf)
 	}while(opc_consulta != 4);
 	
 }
+
+
+void borrar_empleado(FILE*ptr_datfilef)
+{
+	struct fecha fecha_blanco = {0,0,0};
+	struct datos_direcciones direccion_blanco ={" " ,0," "," "," " };
+	struct datos_empleados empleado_blanco={0," ",fecha_blanco," "," ", direccion_blanco}, empleadof;
+	int del_clave;
+	
+	do
+	{
+		fflush(stdin);
+		printf("ingrese la clave del empleado a eliminar: \n");
+		scanf("%d",&del_clave);
+	}while(validar_clave(&del_clave));
+	
+	fseek(ptr_datfilef, (del_clave-1)*sizeof(struct datos_empleados),SEEK_SET);
+	fread(&empleadof, sizeof(struct datos_empleados),1,ptr_datfilef);
+	
+	if(empleadof.clave == del_clave)
+	{
+		fseek(ptr_datfilef, (del_clave-1)*sizeof(struct datos_empleados),SEEK_SET);
+		fwrite(&empleado_blanco, sizeof(struct datos_empleados),1,ptr_datfilef);
+		printf("Usuario eliminado con exito...");	
+	}
+	else 
+		printf("Usuario no encontrado....");
+	
+}
+
 
 bool validar_telefono(char *ftelefono)
 {
