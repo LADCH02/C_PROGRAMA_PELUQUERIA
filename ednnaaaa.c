@@ -1513,9 +1513,21 @@ bool validar_duracion(struct tiempo *tiempo_f)
     return salir;
 }
 
-validar_precio(float *preciof)
+bool validar_precio(float *preciof)
 {
+	bool salir = false;
 	
+	if (*preciof <= 0) 
+	{
+        printf("Error: el precio debe ser mayor que 0.\n");
+        salir =  true;
+    }
+    if (*preciof > 1000000) 
+	{
+        printf("Error: el precio es demasiado alto, verifica.\n");
+        salir =  true;
+    }
+    return salir; 
 }
 
 void consultar_servicios(FILE* ptrservicio)
