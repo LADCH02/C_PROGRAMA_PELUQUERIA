@@ -67,7 +67,8 @@ bool validar_fecha(struct fecha *);
 bool validar_telefono(char *);
 bool validar_num_casa(int *);
 bool validar_puesto(char *);
-
+bool validar_duracion(struct tiempo *);
+bool validar_precio(float *);
 
 // funciones usadas para clientes
 void clientes(FILE*);
@@ -1492,5 +1493,41 @@ void agregar_servicio(FILE* Ptr_Serviciosdatf)
 	}while(validar_siono(siono, 2));
 }
 
+bool validar_duracion(struct tiempo *tiempo_f)
+{
+	bool salir = false;
+    if (tiempo_f->minutos < 0 || tiempo_f->minutos > 59) 
+	{
+        printf("Error: los minutos deben estar entre 0 y 59.\n");
+        salir = true; // inválido ? repetir
+    }
+    if (tiempo_f->hora < 0) {
+        printf("Error: la hora no puede ser negativa.\n");
+        salir = true; // inválido ? repetir
+    }
 
+    if (tiempo_f->hora == 0 && tiempo_f->minutos == 0) {
+        printf("Error: la duracion no puede ser 0 horas con 0 minutos.\n");
+        salir = true;
+    }
+    return salir;
+}
 
+validar_precio(float *preciof)
+{
+	
+}
+
+void consultar_servicios(FILE* ptrservicio)
+{
+	
+}
+
+void modificar_servicios(FILE* ptrservicio)
+{
+	
+}
+void borrar_servicios(FILE* ptrservicio)
+{
+	
+}
