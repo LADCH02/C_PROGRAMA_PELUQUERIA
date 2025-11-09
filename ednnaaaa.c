@@ -27,7 +27,7 @@ struct tiempo
 {
 	int hora;
 	int minutos;
-}
+};
 
 struct datos_clientes
 {
@@ -56,7 +56,7 @@ struct datos_servicios
 	char descripcion[100];
 	float precio;
 	struct tiempo duracion;
-}
+};
 
 
 
@@ -77,7 +77,7 @@ void clientes(FILE*);
 void agregar_cliente(FILE*);
 void consultar(FILE*);
 void modificar_ciliente(FILE*);
-void modificar_menu_clientes(FILE *, struct datos_clientes);
+void modificar_menu_clientes(FILE *, struct datos_clientes *c);
 void borrar_cliente(FILE*);
 bool validar_existencia_clave(int *, FILE *);
 
@@ -86,7 +86,7 @@ void empleados(FILE*);
 void agregar_empleado(FILE*);
 void consultar_empleado(FILE*);
 void modificar_empleado(FILE*);
-void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados);
+void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c);
 void borrar_empleado(FILE*);
 bool validar_existencia_clave_empleado(int *, FILE *);
 
@@ -95,7 +95,7 @@ void servicios(FILE*);
 void agregar_servicios(FILE*);
 void consultar_servicio(FILE*);
 void modificar_servicio(FILE*);
-void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios);
+void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c);
 void borrar_servicio(FILE*);
 bool validar_existencia_clave_servicio(int *, FILE *);
 
@@ -316,7 +316,7 @@ void servicios(FILE* Ptr_fileservicio)
 				printf("No se abrio el archivo");
 			else
 			{
-				agregar_servicio(Ptr_fileservicio);
+				agregar_servicios(Ptr_fileservicio);
 				fclose(Ptr_fileservicio);
 			}
 			break;	
@@ -842,7 +842,7 @@ void modificar_empleado(FILE* Ptr_empleadosdatf)
 				
 				if(empleadof.clave == clave_buscar)
 				{
-					
+					modificar_menu_empleado(Ptr_empleadosdatf,&empleadof);
 				}
 				else
 					printf(rojo"La clave ingresada no existe\n"reset);
@@ -903,8 +903,7 @@ void modificar_empleado(FILE* Ptr_empleadosdatf)
 
 void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 {
-	char telefono_nuevo[10],nombre_nuevo[100], correo_nuevo[100], calle_nueva[100], colonia_nueva[100], municipio_nuevo[100], estado_nuevo[100],puesto[100];;
-	int opc_consulta, num_exterior_nuevo;
+	int opc_consulta;
 	do
 	{
 		printf("%20s\n", "Que desea modificar del empleado: ");
@@ -924,11 +923,11 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 			do
 			{
 				fflush(stdin);
-				printf("Ingrese el nuevo telefono del cliente\n");
-				gets(telefono_nuevo);
-			}while(validar_telefono(telefono_nuevo));
+				printf("Ingrese el nuevo telefono del empleado\n");
+				gets(c->telefono);
+			}while(validar_telefono(c->telefono));
 			
-			strcpy(c->telefono, telefono_nuevo);
+			
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_empleados), SEEK_SET);
 			fwrite(c, sizeof(struct datos_empleados),1,Ptr_fileTxt);
 			printf("Empleado modificado con exito\n");
@@ -940,12 +939,12 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 			{
 				fflush(stdin);
 				printf("Ingrese el nuevo nombre del empleado\n");
-				gets(nombre_nuevo);
-			}while(validar_nombre(nombre_nuevo));
+				gets(c->nombre);
+			}while(validar_nombre(c->nombre));
 			
-			strcpy(c->nombre, nombre_nuevo);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_empleados), SEEK_SET);
 			fwrite(c, sizeof(struct datos_empleados),1,Ptr_fileTxt);
+			
 			printf("Empleado modificado con exito\n");			
 			break;
 			
@@ -954,16 +953,34 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 			{
 				fflush(stdin);
 				printf("Ingrese el nuevo correo del cliente\n");
-				gets(correo_nuevo);
-			}while(validar_nombre(correo_nuevo));
+				gets(c->correo);
+			}while(validar_nombre(c->correo));
 			
-			strcpy(c->correo, correo_nuevo);
+			
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_empleados), SEEK_SET);
 			fwrite(c, sizeof(struct datos_empleados),1,Ptr_fileTxt);
+			
 			printf("Empleado modificado con exito\n");
 			break;
 		
 		case 4:
+			printf("--- Nueva fecha de contratacion ---\n");
+			do
+			{
+				fflush(stdin);
+				printf("Ingrese dia: \n");
+				scanf("%d",&c->fecha_contratacion.dia);
+				
+				printf("Ingrese mes: \n");
+				scanf("%d",&c->fecha_contratacion.mes);
+				
+				printf("Ingrese anio: \n");
+				scanf("%d",&c->fecha_contratacion.ano);			
+			}while(validar_fecha(&c->fecha_contratacion));
+			
+			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
+            fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
+            printf("Fecha modificada con exito\n");
             break;
             
             
@@ -974,47 +991,47 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
             {
                 fflush(stdin);
                 printf("Ingrese calle: ");
-                gets(calle_nueva);
-            }while(validar_nombre(calle_nueva));
-            strcpy(c->direccion_empleado.calle,calle_nueva);
+                gets(c->direccion_empleado.calle);
+            }while(validar_nombre(c->direccion_empleado.calle));
+            
             do
             {    
                 fflush(stdin);
                 printf("Ingrese el numero exterior: ");
-                scanf("%d", &num_exterior_nuevo);
-            }while(validar_num_casa(&num_exterior_nuevo));
-            c->direccion_cliente.num_exterior = num_exterior_nuevo;
+                scanf("%d", &c->direccion_empleado.num_exterior);
+            }while(validar_num_casa(&c->direccion_empleado.num_exterior));
+            
             
             do
             {
                 fflush(stdin);
                 printf("Ingrese colonia: ");
-                gets(c->direccion_cliente.colonia);
-            }while(validar_nombre(c->direccion_cliente.colonia));
-            strcpy(c->direccion_cliente.colonia, colonia_nueva);
+                gets(c->direccion_empleado.colonia);
+            }while(validar_nombre(c->direccion_empleado.colonia));
+            
             
             do
             {
                 fflush(stdin);
                 printf("Ingrese municipio: ");
-                gets(c->direccion_cliente.municipio);
-            }while(validar_nombre(c->direccion_cliente.municipio));
-			strcpy(c->direccion_cliente.municipio, municipio_nuevo);          
+                gets(c->direccion_empleado.municipio);
+            }while(validar_nombre(c->direccion_empleado.municipio));
+			
 		    
             do
             {
                 fflush(stdin);
                 printf("Ingrese estado: ");
-                gets(c->direccion_cliente.estado);
-            }while(validar_nombre(c->direccion_cliente.estado));
-            strcpy(c->direccion_cliente.estado, estado_nuevo);
+                gets(c->direccion_empleado.estado);
+            }while(validar_nombre(c->direccion_empleado.estado));
+            
             
             fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
-            fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
+            fwrite(c, sizeof(struct datos_empleados),1,Ptr_fileTxt);
             printf("Direccion modificada con exito\n");
             break;			
 		case 7:
-			printf("Regresando al menu modificar cliente....\n");
+			printf("Regresando al menu modificar empleado....\n");
 			break;
 	}
 }
@@ -1024,7 +1041,7 @@ void borrar_empleado(FILE*ptr_datfilef)
 {
 	struct fecha fecha_blanco = {0,0,0};
 	struct datos_direcciones direccion_blanco ={" " ,0," "," "," " };
-	struct datos_empleados empleado_blanco={0," ",fecha_blanco," "," ", direccion_blanco}, empleadof;
+	struct datos_empleados empleado_blanco={0," ", " ",fecha_blanco," "," ", direccion_blanco}, empleadof;
 	int del_clave;
 	
 	do
@@ -1308,7 +1325,7 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 				
 				if(clientef.clave == clave_ciliente)
 				{
-					modificar_menu(Ptr_fileTxt, &clientef);
+					modificar_menu_clientes(Ptr_fileTxt, &clientef);
 				}
 				else
 					printf(rojo"La clave ingresada no existe\n"reset);
@@ -1328,7 +1345,7 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 				{
 					if(strcmp(clientef.nombre,nombre_ciliente))
 					{
-						modificar_menu(Ptr_fileTxt,&clientef);
+						modificar_menu_clientes(Ptr_fileTxt,&clientef);
 						encontrado = false;
 					}
 				}
@@ -1351,7 +1368,7 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 				{
 					if(strcmp(clientef.telefono,telefono_ciliente))
 					{
-						modificar_menu(Ptr_fileTxt,&clientef);
+						modificar_menu_clientes(Ptr_fileTxt,&clientef);
 						encontrado = false;
 					}
 				}
@@ -1369,8 +1386,8 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 
 void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 {
-	char telefono_nuevo[10],nombre_nuevo[100], correo_nuevo[100], calle_nueva[100], colonia_nueva[100], municipio_nuevo[100], estado_nuevo[100];
-	int opc_consulta, num_exterior_nuevo;
+	int opc_consulta;
+	
 	do
 	{
 		printf("%20s\n", "Que desea modificar del cliente: ");
@@ -1390,12 +1407,12 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 			{
 				fflush(stdin);
 				printf("Ingrese el nuevo telefono del cliente\n");
-				gets(telefono_nuevo);
-			}while(validar_telefono(telefono_nuevo));
+				gets(c->telefono);
+			}while(validar_telefono(c->telefono));
 			
-			strcpy(c->telefono, c->telefono);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
 			fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
+			
 			printf("Cliente modificado con exito\n");
 
 			break;
@@ -1405,12 +1422,12 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 			{
 				fflush(stdin);
 				printf("Ingrese el nuevo nombre del cliente\n");
-				gets(nombre_nuevo);
-			}while(validar_nombre(nombre_nuevo));
+				gets(c->nombre);
+			}while(validar_nombre(c->nombre));
 			
-			strcpy(c->nombre, nombre_nuevo);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
 			fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
+			
 			printf("Cliente modificado con exito\n");			
 			break;
 			
@@ -1419,16 +1436,33 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 			{
 				fflush(stdin);
 				printf("Ingrese el nuevo correo del cliente\n");
-				gets(correo_nuevo);
-			}while(validar_nombre(correo_nuevo));
-			
-			strcpy(c->correo, correo_nuevo);
+				gets(c->correo);
+			}while(validar_nombre(c->correo));
+		
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
 			fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
+			
 			printf("Cliente modificado con exito\n");
 			break;
 		
 		case 4:
+			printf("--- Nueva fecha de nacimiento ---\n");
+			do
+			{
+				fflush(stdin);
+				printf("Ingrese dia: \n");
+				scanf("%d",&c->fecha_nacimiento.dia);
+				
+				printf("Ingrese mes: \n");
+				scanf("%d",&c->fecha_nacimiento.mes);
+				
+				printf("Ingrese anio: \n");
+				scanf("%d",&c->fecha_nacimiento.ano);			
+			}while(validar_fecha(&c->fecha_nacimiento));
+			
+			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
+            fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
+            printf("Fecha modificada con exito\n");
             break;
             
             
@@ -1441,14 +1475,14 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
                 printf("Ingrese calle: ");
                 gets(c->direccion_cliente.calle);
             }while(validar_nombre(c->direccion_cliente.calle));
-            strcpy(c->direccion_cliente.calle, calle_nueva);
+            
             do
             {    
                 fflush(stdin);
                 printf("Ingrese el numero exterior: ");
                 scanf("%d", &c->direccion_cliente.num_exterior);
             }while(validar_num_casa(&c->direccion_cliente.num_exterior));
-            c->direccion_cliente.num_exterior = num_exterior_nuevo;
+            
             
             do
             {
@@ -1456,7 +1490,7 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
                 printf("Ingrese colonia: ");
                 gets(c->direccion_cliente.colonia);
             }while(validar_nombre(c->direccion_cliente.colonia));
-            strcpy(c->direccion_cliente.colonia, colonia_nueva);
+           
             
             do
             {
@@ -1464,7 +1498,7 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
                 printf("Ingrese municipio: ");
                 gets(c->direccion_cliente.municipio);
             }while(validar_nombre(c->direccion_cliente.municipio));
-			strcpy(c->direccion_cliente.municipio, municipio_nuevo);          
+		     
 		    
             do
             {
@@ -1472,7 +1506,7 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
                 printf("Ingrese estado: ");
                 gets(c->direccion_cliente.estado);
             }while(validar_nombre(c->direccion_cliente.estado));
-            strcpy(c->direccion_cliente.estado, estado_nuevo);
+            
             
             fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
             fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
@@ -1573,7 +1607,7 @@ void borrar_cliente(FILE*ptr_datfilef)
 }
 
 
-void agregar_servicio(FILE* Ptr_Serviciosdatf)
+void agregar_servicios(FILE* Ptr_Serviciosdatf)
 {
 	struct datos_servicios servicio;
 	char siono[3];
@@ -1610,7 +1644,7 @@ void agregar_servicio(FILE* Ptr_Serviciosdatf)
 		{
 			printf("Ingresa el precio del servicio: \n");
 			scanf("%f",&servicio.precio);
-		}while(validar_precio(servicio.precio));
+		}while(validar_precio(&servicio.precio));
 		
 		do
 		{
@@ -1735,7 +1769,7 @@ void modificar_servicio(FILE* ptrservicio)
 				
 				if(serviciof.clave == clave_servicio)
 				{
-					modificar_menu(ptrservicio, &serviciof);
+					modificar_menu_servicio(ptrservicio, &serviciof);
 				}
 				else
 					printf(rojo"La clave ingresada no existe\n"reset);
@@ -1750,9 +1784,8 @@ void modificar_servicio(FILE* ptrservicio)
 
 void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
 {
-	int opc_consulta,hora,minutos;
-	char descripcion[100];
-	float precio;
+	int opc_consulta;
+
 	do
 	{
 		printf("%20s\n", "Que desea modificar del cliente: ");
@@ -1770,12 +1803,12 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
 			{
 				fflush(stdin);
 				printf("Ingrese la nueva descripcion del servicio\n");
-				gets(descripcion);
-			}while(validar_nombre(descripcion));
+				gets(c->descripcion);
+			}while(validar_nombre(c->descripcion));
 			
-			strcpy(c->descripcion, descripcion);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_servicios), SEEK_SET);
 			fwrite(c, sizeof(struct datos_servicios),1,Ptr_fileTxt);
+			
 			printf("Servicio modificado con exito\n");
 			break;
 			
@@ -1784,10 +1817,9 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
 			{
 				fflush(stdin);
 				printf("Ingrese el nuevo precio del servicio\n");
-				scanf("%f",&precio);
-			}while(validar_precio(precio));
+				scanf("%f",&c->precio);
+			}while(validar_precio(&c->precio));
 			
-			c->precio = precio);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_servicios), SEEK_SET);
 			fwrite(c, sizeof(struct datos_servicios),1,Ptr_fileTxt);
 			printf("Cliente modificado con exito\n");			
@@ -1802,7 +1834,7 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
 				scanf("%d",&c->duracion.hora);
 				printf("Ingrese minutos: \n");
 				scanf("%d",&c->duracion.minutos);
-			}while(validar_duracion(c->duracion));
+			}while(validar_duracion(&c->duracion));
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
 			fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
 			printf("servicios modificado con exito\n");
@@ -1816,7 +1848,7 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
 // falta una funcion
 void borrar_servicio(FILE* ptr_datfilef)
 {
-	struct  tiempo = {0,0};
+	struct tiempo tiempo_blanco = {0,0};
 	struct datos_servicios servicio_blanco={0," ",0.0,tiempo_blanco}, serviciof;
 	int del_clave;
 	
