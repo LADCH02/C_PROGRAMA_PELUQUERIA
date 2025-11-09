@@ -114,8 +114,10 @@ bool validar_existencia_clave_servicio(int *, FILE *, bool);
 // funciones usadas para agenda
 void agenda(FILE*, FILE*, FILE*, FILE*);
 void agregar_agenda(FILE* , FILE* , FILE*, FILE* );
+void borrar_agenda(FILE*);
 bool validar_existencia_clave_agenda(int *, FILE *);
 bool validar_estatus(char *);
+
 
 
 // Espacios
@@ -435,7 +437,7 @@ void agenda(FILE *Ptr_fileagenda, FILE *Ptr_filecliente, FILE *Ptr_fileempleado,
 				printf("No se abrio el archivo");
 			else
 			{
-				borrar_empleado(Ptr_fileagenda);
+				borrar_agenda(Ptr_fileagenda);
 				fclose(Ptr_fileagenda);
 			}
 					
@@ -2153,4 +2155,32 @@ void borrar_servicio(FILE* ptr_datfilef)
 	}
 	else 
 		printf("Servicio no encontrado....");
+}
+
+
+void borrar_agenda(FILE*ptr_datfilef)
+{
+	struct fecha fecha_blanco = {0,0,0};
+	struct datos_agenda agenda_blanco={0,0,0,0," ",fecha_blanco,0}, agendaf;
+	int del_clave;
+	
+	do
+	{
+		fflush(stdin);
+		printf("ingrese el numero de agendado a eliminar: \n");
+		scanf("%d",&del_clave);
+	}while(validar_clave(&del_clave));
+	
+	fseek(ptr_datfilef, (del_clave-1)*sizeof(struct datos_clientes),SEEK_SET);
+	fread(&agendaf, sizeof(struct datos_clientes),1,ptr_datfilef);
+	
+	if(agendaf.clave == del_clave)
+	{
+		fseek(ptr_datfilef, (del_clave-1)*sizeof(struct datos_agenda),SEEK_SET);
+		fwrite(&agendaf, sizeof(struct datos_agenda),1,ptr_datfilef);
+		printf("Usuario eliminado con exito...");	
+	}
+	else 
+		printf("Usuario no encontrado....");
+	
 }
