@@ -77,6 +77,7 @@ void clientes(FILE*);
 void agregar_cliente(FILE*);
 void consultar(FILE*);
 void modificar_ciliente(FILE*);
+void modificar_menu_clientes(FILE *, struct datos_clientes);
 void borrar_cliente(FILE*);
 bool validar_existencia_clave(int *, FILE *);
 
@@ -85,6 +86,7 @@ void empleados(FILE*);
 void agregar_empleado(FILE*);
 void consultar_empleado(FILE*);
 void modificar_empleado(FILE*);
+void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados);
 void borrar_empleado(FILE*);
 bool validar_existencia_clave_empleado(int *, FILE *);
 
@@ -93,12 +95,13 @@ void servicios(FILE*);
 void agregar_servicios(FILE*);
 void consultar_servicio(FILE*);
 void modificar_servicio(FILE*);
+void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios);
 void borrar_servicio(FILE*);
 bool validar_existencia_clave_servicio(int *, FILE *);
 
 // Espacios
 void espacios_blancos(FILE*,FILE*,FILE*);
-void modificar_menu(FILE *, struct datos_clientes *c);
+
 
 
 
@@ -898,6 +901,123 @@ void modificar_empleado(FILE* Ptr_empleadosdatf)
 	
 }
 
+void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
+{
+	char telefono_nuevo[10],nombre_nuevo[100], correo_nuevo[100], calle_nueva[100], colonia_nueva[100], municipio_nuevo[100], estado_nuevo[100],puesto[100];;
+	int opc_consulta, num_exterior_nuevo;
+	do
+	{
+		printf("%20s\n", "Que desea modificar del empleado: ");
+		printf("%-15s\n","1.-Telefono");
+		printf("%-15s\n","2.-Nombre");
+		printf("%-15s\n","3.-Correo");
+		printf("%-15s\n","4.-Fecha de contratacion");
+		printf("%-15s\n","5.-dirrecion");
+		printf("%-15s\n","6.-puesto");
+		printf("%-15s\n","7.-Salir");
+		scanf("%d",&opc_consulta);
+	}while(opc_consulta < 1 || opc_consulta > 7);
+	
+	switch(opc_consulta)
+	{
+		case 1:
+			do
+			{
+				fflush(stdin);
+				printf("Ingrese el nuevo telefono del cliente\n");
+				gets(telefono_nuevo);
+			}while(validar_telefono(telefono_nuevo));
+			
+			strcpy(c->telefono, telefono_nuevo);
+			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_empleados), SEEK_SET);
+			fwrite(c, sizeof(struct datos_empleados),1,Ptr_fileTxt);
+			printf("Empleado modificado con exito\n");
+
+			break;
+			
+		case 2:
+			do
+			{
+				fflush(stdin);
+				printf("Ingrese el nuevo nombre del empleado\n");
+				gets(nombre_nuevo);
+			}while(validar_nombre(nombre_nuevo));
+			
+			strcpy(c->nombre, nombre_nuevo);
+			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_empleados), SEEK_SET);
+			fwrite(c, sizeof(struct datos_empleados),1,Ptr_fileTxt);
+			printf("Empleado modificado con exito\n");			
+			break;
+			
+		case 3:
+			do
+			{
+				fflush(stdin);
+				printf("Ingrese el nuevo correo del cliente\n");
+				gets(correo_nuevo);
+			}while(validar_nombre(correo_nuevo));
+			
+			strcpy(c->correo, correo_nuevo);
+			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_empleados), SEEK_SET);
+			fwrite(c, sizeof(struct datos_empleados),1,Ptr_fileTxt);
+			printf("Empleado modificado con exito\n");
+			break;
+		
+		case 4:
+            break;
+            
+            
+        case 5:
+            printf("--- Nueva Direccion ---\n");
+            
+            do
+            {
+                fflush(stdin);
+                printf("Ingrese calle: ");
+                gets(calle_nueva);
+            }while(validar_nombre(calle_nueva));
+            strcpy(c->direccion_empleado.calle,calle_nueva);
+            do
+            {    
+                fflush(stdin);
+                printf("Ingrese el numero exterior: ");
+                scanf("%d", &num_exterior_nuevo);
+            }while(validar_num_casa(&num_exterior_nuevo));
+            c->direccion_cliente.num_exterior = num_exterior_nuevo;
+            
+            do
+            {
+                fflush(stdin);
+                printf("Ingrese colonia: ");
+                gets(c->direccion_cliente.colonia);
+            }while(validar_nombre(c->direccion_cliente.colonia));
+            strcpy(c->direccion_cliente.colonia, colonia_nueva);
+            
+            do
+            {
+                fflush(stdin);
+                printf("Ingrese municipio: ");
+                gets(c->direccion_cliente.municipio);
+            }while(validar_nombre(c->direccion_cliente.municipio));
+			strcpy(c->direccion_cliente.municipio, municipio_nuevo);          
+		    
+            do
+            {
+                fflush(stdin);
+                printf("Ingrese estado: ");
+                gets(c->direccion_cliente.estado);
+            }while(validar_nombre(c->direccion_cliente.estado));
+            strcpy(c->direccion_cliente.estado, estado_nuevo);
+            
+            fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
+            fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
+            printf("Direccion modificada con exito\n");
+            break;			
+		case 7:
+			printf("Regresando al menu modificar cliente....\n");
+			break;
+	}
+}
 
 //falta una funcion
 void borrar_empleado(FILE*ptr_datfilef)
@@ -1247,7 +1367,7 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 	
 }
 
-void modificar_menu(FILE *Ptr_fileTxt, struct datos_clientes *c )
+void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 {
 	char telefono_nuevo[10],nombre_nuevo[100], correo_nuevo[100], calle_nueva[100], colonia_nueva[100], municipio_nuevo[100], estado_nuevo[100];
 	int opc_consulta, num_exterior_nuevo;
