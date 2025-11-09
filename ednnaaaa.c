@@ -847,8 +847,23 @@ void consultar_empleado(FILE* Ptr_empleadosdatf)
 				
 				if(empleadof.clave == clave_buscar)
 				{
-					printf("%-20s%-20s%-20s%-20s%-20s%-30s%-30s\n", "CLAVE", "NOMBRE", "PUESTO","FECHA DE CONTRATACION", "TELEFONO", "CORREO","DIRECCION");
-					printf("%-20d%-20s%-20s%-2d/%-1d/%-3d%20s%30s%-30s%30s%30s%30s%30s\n", empleadof.clave, empleadof.nombre, empleadof.puesto,  empleadof.fecha_contratacion.dia, empleadof.fecha_contratacion.mes, empleadof.fecha_contratacion.ano, empleadof.telefono, empleadof.correo, empleadof.direccion_empleado.calle,empleadof.direccion_empleado.num_exterior, empleadof.direccion_empleado.colonia, empleadof.direccion_empleado.municipio, empleadof.direccion_empleado.estado);
+					printf("%-10s%-20s%-20s%-25s%-20s%-30s%-25s\n","CLAVE", "NOMBRE", "PUESTO", "FECHA DE CONTRATACION","TELEFONO", "CORREO", "DIRECCION");
+					
+					printf("%-10d%-20s%-20s%02d/%02d/%-04d%25s%18s%15s %-1d, %s, %s, %s\n",
+					empleadof.clave,
+					empleadof.nombre,
+			        empleadof.puesto,
+			        empleadof.fecha_contratacion.dia,
+				   	empleadof.fecha_contratacion.mes,
+					empleadof.fecha_contratacion.ano,
+					empleadof.telefono,
+			        empleadof.correo,
+	  		        empleadof.direccion_empleado.calle,
+					empleadof.direccion_empleado.num_exterior,
+					empleadof.direccion_empleado.colonia,
+					empleadof.direccion_empleado.municipio,
+					empleadof.direccion_empleado.estado);
+
 				}
 				else
 					printf(rojo"La clave ingresada no existe\n"reset);
@@ -869,9 +884,23 @@ void consultar_empleado(FILE* Ptr_empleadosdatf)
 					
 					if(strcmp(empleadof.nombre,nombre_buscar) == 0 && !feof(Ptr_empleadosdatf))
 					{
-						printf("%-20s%-20s%-20s%-20s%-20s%-30s%-30s\n", "CLAVE", "NOMBRE", "PUESTO","FECHA DE CONTRATACION", "TELEFONO", "CORREO","DIRECCION");
-						printf("%-20d%-20s%-20s%-2d/%-1d/%-3d%20s%30s%-30s%30s%30s%30s%30s\n", empleadof.clave, empleadof.nombre, empleadof.puesto,  empleadof.fecha_contratacion.dia, empleadof.fecha_contratacion.mes, empleadof.fecha_contratacion.ano, empleadof.telefono, empleadof.correo, empleadof.direccion_empleado.calle,empleadof.direccion_empleado.num_exterior, empleadof.direccion_empleado.colonia, empleadof.direccion_empleado.municipio, empleadof.direccion_empleado.estado);
-				
+						printf("%-10s%-20s%-20s%-25s%-20s%-30s%-25s\n","CLAVE", "NOMBRE", "PUESTO", "FECHA DE CONTRATACION","TELEFONO", "CORREO", "DIRECCION");
+					
+						printf("%-10d%-20s%-20s%02d/%02d/%-04d%25s%18s%15s %-1d, %s, %s, %s\n",
+						empleadof.clave,
+						empleadof.nombre,
+				        empleadof.puesto,
+				        empleadof.fecha_contratacion.dia,
+					   	empleadof.fecha_contratacion.mes,
+						empleadof.fecha_contratacion.ano,
+						empleadof.telefono,
+				        empleadof.correo,
+		  		        empleadof.direccion_empleado.calle,
+						empleadof.direccion_empleado.num_exterior,
+						empleadof.direccion_empleado.colonia,
+						empleadof.direccion_empleado.municipio,
+						empleadof.direccion_empleado.estado);
+						
 						encontrado = false;
 					}
 						
@@ -896,9 +925,23 @@ void consultar_empleado(FILE* Ptr_empleadosdatf)
 					
 					if(strcmp(empleadof.telefono,telefono_buscar) == 0 && !feof(Ptr_empleadosdatf))
 					{
-						printf("%-20s%-20s%-20s%-20s%-20s%-30s%-30s\n", "CLAVE", "NOMBRE", "PUESTO","FECHA DE CONTRATACION", "TELEFONO", "CORREO","DIRECCION");
-						printf("%-20d%-20s%-20s%-2d/%-1d/%-3d%20s%30s%-30s%30s%30s%30s%30s\n", empleadof.clave, empleadof.nombre, empleadof.puesto,  empleadof.fecha_contratacion.dia, empleadof.fecha_contratacion.mes, empleadof.fecha_contratacion.ano, empleadof.telefono, empleadof.correo, empleadof.direccion_empleado.calle,empleadof.direccion_empleado.num_exterior, empleadof.direccion_empleado.colonia, empleadof.direccion_empleado.municipio, empleadof.direccion_empleado.estado);
-				
+						printf("%-10s%-20s%-20s%-25s%-20s%-30s%-25s\n","CLAVE", "NOMBRE", "PUESTO", "FECHA DE CONTRATACION","TELEFONO", "CORREO", "DIRECCION");
+					
+						printf("%-10d%-20s%-20s%02d/%02d/%-04d%25s%18s%15s %-1d, %s, %s, %s\n",
+						empleadof.clave,
+						empleadof.nombre,
+				        empleadof.puesto,
+				        empleadof.fecha_contratacion.dia,
+					   	empleadof.fecha_contratacion.mes,
+						empleadof.fecha_contratacion.ano,
+						empleadof.telefono,
+				        empleadof.correo,
+		  		        empleadof.direccion_empleado.calle,
+						empleadof.direccion_empleado.num_exterior,
+						empleadof.direccion_empleado.colonia,
+						empleadof.direccion_empleado.municipio,
+						empleadof.direccion_empleado.estado);
+						
 						encontrado = false;
 					}
 					
@@ -1357,8 +1400,21 @@ void consultar(FILE* Ptr_fileTxt)
 				
 				if(clientef.clave == clave_ciliente)
 				{
-					printf("%-20s%-20s%-20s%-20s%-30s%-30s\n", "CLAVE", "NOMBRE", "FECHA NACIMIENTO", "TELEFONO", "CORREO","DIRECCION");
-					printf("%-20d%-20s%-2d/%-1d/%-3d%20s%30s%-30s%30s%30s%30s%30s\n", clientef.clave, clientef.nombre, clientef.fecha_nacimiento.dia, clientef.fecha_nacimiento.mes, clientef.fecha_nacimiento.ano, clientef.telefono, clientef.correo,clientef.direccion_cliente.calle,clientef.direccion_cliente.num_exterior,clientef.direccion_cliente.colonia,clientef.direccion_cliente.municipio,clientef.direccion_cliente.estado);
+					printf("%-10s%-20s%-25s%-20s%-30s%-25s\n","CLAVE", "NOMBRE", "FECHA DE NACIMIENTO","TELEFONO", "CORREO", "DIRECCION");
+					
+					printf("%-10d%-20s%02d/%02d/%-04d%25s    %18s%15s %-1d, %s, %s, %s\n",
+					clientef.clave,
+					clientef.nombre,
+			        clientef.fecha_nacimiento.dia,
+				   	clientef.fecha_nacimiento.mes,
+					clientef.fecha_nacimiento.ano,
+					clientef.telefono,
+			        clientef.correo,
+	  		        clientef.direccion_cliente.calle,
+					clientef.direccion_cliente.num_exterior,
+					clientef.direccion_cliente.colonia,
+					clientef.direccion_cliente.municipio,
+					clientef.direccion_cliente.estado);
 				}
 				else
 					printf(rojo"La clave ingresada no existe\n"reset);
@@ -1379,8 +1435,22 @@ void consultar(FILE* Ptr_fileTxt)
 					
 					if(strcmp(clientef.nombre,nombre_ciliente) == 0 && !feof(Ptr_fileTxt))
 					{
-						printf("%-20s%-20s%-20s%-20s%-30s%-30s\n", "CLAVE", "NOMBRE", "FECHA NACIMIENTO", "TELEFONO", "CORREO","DIRECCION");
-						printf("%-20d%-20s%-2d/%-1d/%-3d%20s%30s%-30s%30s%30s%30s%30s\n", clientef.clave, clientef.nombre, clientef.fecha_nacimiento.dia, clientef.fecha_nacimiento.mes, clientef.fecha_nacimiento.ano, clientef.telefono, clientef.correo,clientef.direccion_cliente.calle,clientef.direccion_cliente.num_exterior,clientef.direccion_cliente.colonia,clientef.direccion_cliente.municipio,clientef.direccion_cliente.estado);
+						printf("%-10s%-20s%-25s%-20s%-30s%-25s\n","CLAVE", "NOMBRE", "FECHA DE NACIMIENTO","TELEFONO", "CORREO", "DIRECCION");
+					
+						printf("%-10d%-20s%02d/%02d/%-04d%25s    %18s%15s %-1d, %s, %s, %s\n",
+						clientef.clave,
+						clientef.nombre,
+				        clientef.fecha_nacimiento.dia,
+					   	clientef.fecha_nacimiento.mes,
+						clientef.fecha_nacimiento.ano,
+						clientef.telefono,
+				        clientef.correo,
+		  		        clientef.direccion_cliente.calle,
+						clientef.direccion_cliente.num_exterior,
+						clientef.direccion_cliente.colonia,
+						clientef.direccion_cliente.municipio,
+						clientef.direccion_cliente.estado);
+						
 						encontrado = false;
 					}
 						
@@ -1405,8 +1475,21 @@ void consultar(FILE* Ptr_fileTxt)
 					
 					if(strcmp(clientef.telefono,telefono_ciliente) == 0 && !feof(Ptr_fileTxt))
 					{
-						printf("%-20s%-20s%-20s%-20s%-30s%-30s\n", "CLAVE", "NOMBRE", "FECHA NACIMIENTO", "TELEFONO", "CORREO","DIRECCION");
-						printf("%-20d%-20s%-2d/%-1d/%-3d%20s%30s%-30s%30s%30s%30s%30s\n", clientef.clave, clientef.nombre, clientef.fecha_nacimiento.dia, clientef.fecha_nacimiento.mes, clientef.fecha_nacimiento.ano, clientef.telefono, clientef.correo,clientef.direccion_cliente.calle,clientef.direccion_cliente.num_exterior,clientef.direccion_cliente.colonia,clientef.direccion_cliente.municipio,clientef.direccion_cliente.estado);
+						printf("%-10s%-20s%-25s%-20s%-30s%-25s\n","CLAVE", "NOMBRE", "FECHA DE NACIMIENTO","TELEFONO", "CORREO", "DIRECCION");
+						
+						printf("%-10d%-20s%02d/%02d/%-04d%25s    %18s%15s %-1d, %s, %s, %s\n",
+						clientef.clave,
+						clientef.nombre,
+				        clientef.fecha_nacimiento.dia,
+					   	clientef.fecha_nacimiento.mes,
+						clientef.fecha_nacimiento.ano,
+						clientef.telefono,
+				        clientef.correo,
+		  		        clientef.direccion_cliente.calle,
+						clientef.direccion_cliente.num_exterior,
+						clientef.direccion_cliente.colonia,
+						clientef.direccion_cliente.municipio,
+						clientef.direccion_cliente.estado);
 
 						encontrado = false;
 					}
