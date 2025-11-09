@@ -27,7 +27,7 @@ struct tiempo
 {
 	int hora;
 	int minutos;
-};
+}
 
 struct datos_clientes
 {
@@ -56,18 +56,7 @@ struct datos_servicios
 	char descripcion[100];
 	float precio;
 	struct tiempo duracion;
-};
-
-struct datos_agenda{
-	int clave;
-	int clave_cliente;
-	int clave_empleado;
-	int clave_servicio;
-	char estatus[100];
-	struct fecha fecha_agendada;
-	int hora;		
-};
-
+}
 
 
 
@@ -76,8 +65,7 @@ bool validar_sub_menu(char );
 bool validar_siono(char *, int);
 bool validar_clave(int *);
 bool validar_nombre(char *);
-bool validar_formato_fecha(struct fecha *);
-bool validar_fecha_no_futura(struct fecha *);
+bool validar_fecha(struct fecha *);
 bool validar_telefono(char *);
 bool validar_num_casa(int *);
 bool validar_puesto(char *);
@@ -89,52 +77,39 @@ void clientes(FILE*);
 void agregar_cliente(FILE*);
 void consultar(FILE*);
 void modificar_ciliente(FILE*);
-void modificar_menu_clientes(FILE *, struct datos_clientes *c);
+void modificar_menu_clientes(FILE *, struct datos_clientes);
 void borrar_cliente(FILE*);
-bool validar_existencia_clave_cliente(int *, FILE *, bool);
+bool validar_existencia_clave(int *, FILE *);
 
 // Funciones usadas para empleados
 void empleados(FILE*);
 void agregar_empleado(FILE*);
 void consultar_empleado(FILE*);
 void modificar_empleado(FILE*);
-void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c);
+void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados);
 void borrar_empleado(FILE*);
-bool validar_existencia_clave_empleado(int *, FILE *, bool);
+bool validar_existencia_clave_empleado(int *, FILE *);
 
 // funciones usadas para servicios
 void servicios(FILE*);
 void agregar_servicios(FILE*);
 void consultar_servicio(FILE*);
 void modificar_servicio(FILE*);
-void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c);
+void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios);
 void borrar_servicio(FILE*);
-bool validar_existencia_clave_servicio(int *, FILE *, bool);
-
-// funciones usadas para agenda
-void agenda(FILE*, FILE*, FILE*, FILE*);
-void agregar_agenda(FILE* , FILE* , FILE*, FILE* );
-void consultar_agenda(FILE* );
-void borrar_agenda(FILE*);
-bool validar_existencia_clave_agenda(int *, FILE *);
-bool validar_estatus(char *);
-
-
+bool validar_existencia_clave_servicio(int *, FILE *);
 
 // Espacios
-void espacios_blancos(FILE*,FILE*,FILE*, FILE*);
-
-
-
+void espacios_blancos(FILE*,FILE*,FILE*);
 
 main()
 {
 	
 	int opcMain;
 	char opc_sub_menu;
-	FILE *ptr_clientesdat, *ptr_empleadosdat, *ptr_serviciosdat, *ptr_agendadat;
+	FILE *ptr_clientesdat, *ptr_empleadosdat, *ptr_serviciosdat;
 	
-	espacios_blancos(ptr_clientesdat, ptr_empleadosdat, ptr_serviciosdat, ptr_agendadat);
+	espacios_blancos(ptr_clientesdat, ptr_empleadosdat, ptr_serviciosdat);
 	
 	
 	do
@@ -165,9 +140,6 @@ main()
 			case 3:
 				servicios(ptr_serviciosdat);
 				break;
-			case 4:
-				agenda(ptr_agendadat, ptr_clientesdat, ptr_empleadosdat,  ptr_serviciosdat);
-				break;
 				
 		}
 						
@@ -187,7 +159,6 @@ bool validar_sub_menu(char fopc_sub_menu)
 	}	
 	return cambio;
 }
-
 
 void clientes(FILE* Ptr_fileClient)
 {
@@ -342,7 +313,7 @@ void servicios(FILE* Ptr_fileservicio)
 				printf("No se abrio el archivo");
 			else
 			{
-				agregar_servicios(Ptr_fileservicio);
+				agregar_servicio(Ptr_fileservicio);
 				fclose(Ptr_fileservicio);
 			}
 			break;	
@@ -379,74 +350,6 @@ void servicios(FILE* Ptr_fileservicio)
 		}
 	}while(opc_sub_menu != 'S' && opc_sub_menu != 's');
 }
-
-void agenda(FILE *Ptr_fileagenda, FILE *Ptr_filecliente, FILE *Ptr_fileempleado, FILE *Ptr_fileservicio)
-{
-	char opc_sub_menu;
-	
-	do
-	{
-		do
-		{
-			printf("%20s\n", "Agenda");
-			printf("%-15s\n","A.-Agregar");
-			printf("%-15s\n","C.-Consultar");
-			printf("%-15s\n","M.-Modificar");
-			printf("%-15s\n","D.-Borrar");
-			printf("%-15s\n","S.-Salir");
-			fflush(stdin);
-			scanf("%c", &opc_sub_menu);
-		}while((validar_sub_menu(opc_sub_menu)));
-		
-		switch (opc_sub_menu)
-		{
-			case 'a' : case 'A':
-			if((Ptr_fileagenda = fopen("agenda.dat","r+")) == NULL || (Ptr_filecliente = fopen("clientes1.dat","r+")) == NULL || (Ptr_fileempleado = fopen("empleados.dat","r+")) == NULL ||  (Ptr_fileservicio = fopen("servicios.dat","r+")) == NULL)
-				printf("No se abrio el archivo");
-			else
-			{
-				agregar_agenda(Ptr_fileagenda, Ptr_filecliente,Ptr_fileempleado, Ptr_fileservicio);
-				fclose(Ptr_fileagenda);
-				fclose(Ptr_filecliente);
-				fclose(Ptr_fileempleado);
-				fclose(Ptr_fileservicio);
-			}
-			break;	
-			
-			case 'c' : case'C': 
-			if((Ptr_fileagenda = fopen("agenda.dat","r+")) == NULL )
-				printf("No se abrio el archivo");
-			else
-			{
-				consultar_agenda(Ptr_fileagenda);
-				fclose(Ptr_fileagenda);
-			}
-			break;
-			
-			case 'm' : case'M': 
-			if((Ptr_fileagenda = fopen("agenda.dat","r+")) == NULL)
-				printf("No se abrio el archivo");
-			else
-			{
-				modificar_empleado(Ptr_fileagenda);
-				fclose(Ptr_fileagenda);
-			}
-			break;	
-			
-			case 'd': case'D':
-			if((Ptr_fileagenda = fopen("agenda.dat","r+")) == NULL)
-				printf("No se abrio el archivo");
-			else
-			{
-				borrar_agenda(Ptr_fileagenda);
-				fclose(Ptr_fileagenda);
-			}
-					
-		}
-	}while(opc_sub_menu != 'S' && opc_sub_menu != 's');
-	
-}
-
 
 bool validar_siono(char *sionof, int opcf)
 {
@@ -493,133 +396,57 @@ bool validar_clave(int *clavef)
 	return cambio;
 }
 
-
-bool validar_existencia_clave_cliente(int *clavef, FILE *ptrf, bool debe_existir)
+bool validar_existencia_clave(int *clavef, FILE *ptrf)
 {
 	struct datos_clientes clientesf;
-    bool cambio = false;
-    bool encontrado = false;
-    
-    while(!feof(ptrf))
-    {
-        fread(&clientesf, sizeof(struct datos_clientes), 1, ptrf);    
-        if(*clavef == clientesf.clave)
-        {
-            encontrado = true;
-            break;
-        }
-    }
-    rewind(ptrf);
-    
-    if(debe_existir) 
-	{
-        if(!encontrado) 
-		{
-            printf(rojo"ERROR: La clave de cliente no existe \a\n"reset);
-            cambio = true;
-        }
-    } 
-	else 
-	{
-        if(encontrado) 
-		{
-            printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
-            cambio = true;
-        }
-    }
-    
-    return cambio;
-}
-
-
-bool validar_existencia_clave_empleado(int *clavef, FILE *ptrf, bool debe_existir)
-{
-    struct datos_empleados empleadof;
-    bool cambio = false;
-    bool encontrado = false;
-    
-    while(!feof(ptrf))
-    {
-        fread(&empleadof, sizeof(struct datos_empleados), 1, ptrf);    
-        if(*clavef == empleadof.clave)
-        {
-            encontrado = true;
-            break;
-        }
-    }
-    rewind(ptrf);
-    
-    if(debe_existir) 
-	{
-        if(!encontrado) 
-		{
-            printf(rojo"ERROR: La clave de empleado no existe \a\n"reset);
-            cambio = true;
-        }
-    } 
-	else 
-	{
-        if(encontrado) 
-		{
-            printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
-            cambio = true;
-        }
-    }
-    
-    return cambio;
-}
-
-bool validar_existencia_clave_servicio(int *clavef, FILE *ptrf, bool debe_existir)
-{
-    struct datos_servicios serviciof;
-    bool cambio = false;
-    bool encontrado = false;
-    
-    while(!feof(ptrf))
-    {
-        fread(&serviciof, sizeof(struct datos_servicios), 1, ptrf);    
-        if(*clavef == serviciof.clave)
-        {
-            encontrado = true;
-            break;
-        }
-    }
-    rewind(ptrf);
-    
-    if(debe_existir) 
-	{
-        if(!encontrado) 
-		{
-            printf(rojo"ERROR: La clave de servicio no existe \a\n"reset);
-            cambio = true;
-        }
-    } 
-	else 
-	{
-        if(encontrado) 
-		{
-            printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
-            cambio = true;
-        }
-    }
-    
-    return cambio;
-}
-
-bool validar_existencia_clave_agenda(int *clave_agendaf, FILE *Ptr_agendadatf)
-{
-	struct datos_agenda agendaf;
 	bool	cambio = false;
-	while(!feof(Ptr_agendadatf))
+	while(!feof(ptrf))
 	{
-		fread(&agendaf, sizeof(struct datos_agenda), 1, Ptr_agendadatf);	
-		if(*clave_agendaf == agendaf.clave && !feof(Ptr_agendadatf))
+		fread(&clientesf, sizeof(struct datos_clientes), 1, ptrf);	
+		if(*clavef == clientesf.clave)
 		{
 			printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
 			cambio = true;
 		}
 	}
-	rewind(Ptr_agendadatf);
+	rewind(ptrf);
+	
+	return cambio;
+}
+
+bool validar_existencia_clave_empleado(int *clavef, FILE *ptrf)
+{
+	struct datos_empleados empleadof;
+	bool	cambio = false;
+	while(!feof(ptrf))
+	{
+		fread(&empleadof, sizeof(struct datos_empleados), 1, ptrf);	
+		if(*clavef == empleadof.clave)
+		{
+			printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
+			cambio = true;
+		}
+	}
+	rewind(ptrf);
+	
+	return cambio;
+}
+
+bool validar_existencia_clave_servicio(int *clavef, FILE *ptrf)
+{
+	struct datos_servicios serviciof;
+	bool	cambio = false;
+	
+	while(!feof(ptrf))
+	{
+		fread(&serviciof, sizeof(struct datos_servicios), 1, ptrf);	
+		if(*clavef == serviciof.clave)
+		{
+			printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
+			cambio = true;
+		}
+	}
+	rewind(ptrf);
 	
 	return cambio;
 }
@@ -668,17 +495,16 @@ bool validar_nombre(char *nombref)
 void agregar_cliente(FILE* Ptr_Clientesdatf )
 {
 	struct datos_clientes cliente;
-	int resultado_scanf;
 	char siono[3];
 	
 	do
 	{
 		do
 		{
-			fflush(stdin);
 			printf("Ingresa la clave del cliente: \n");
-			resultado_scanf = scanf("%d", &cliente.clave);
-		}while(validar_clave(&cliente.clave) || validar_existencia_clave_cliente(&cliente.clave, Ptr_Clientesdatf, false));
+			fflush(stdin);
+			scanf("%d", &cliente.clave);
+		}while(validar_clave(&cliente.clave) || validar_existencia_clave(&cliente.clave, Ptr_Clientesdatf));
 		
 		do
 		{
@@ -699,7 +525,7 @@ void agregar_cliente(FILE* Ptr_Clientesdatf )
 			
 			printf("Ingrese anio: \n");
 			scanf("%d",&cliente.fecha_nacimiento.ano);			
-		}while(validar_formato_fecha(&cliente.fecha_nacimiento) || validar_fecha_no_futura(&cliente.fecha_nacimiento));
+		}while(validar_fecha(&cliente.fecha_nacimiento));
 		
 		do
 		{
@@ -776,10 +602,10 @@ void agregar_empleado(FILE* Ptr_empleadosdatf)
 	{
 		do
 		{
-			fflush(stdin);
 			printf("Ingresa la clave del empleado: \n");
+			fflush(stdin);
 			scanf("%d", &empleado.clave);
-		}while(validar_clave(&empleado.clave) || validar_existencia_clave_empleado(&empleado.clave, Ptr_empleadosdatf, false));
+		}while(validar_clave(&empleado.clave) || validar_existencia_clave_empleado(&empleado.clave, Ptr_empleadosdatf));
 		
 		do
 		{
@@ -807,7 +633,7 @@ void agregar_empleado(FILE* Ptr_empleadosdatf)
 			
 			printf("Ingrese anio: \n");
 			scanf("%d",&empleado.fecha_contratacion.ano);			
-		}while(validar_formato_fecha(&empleado.fecha_contratacion) || validar_fecha_no_futura(&empleado.fecha_contratacion));
+		}while(validar_fecha(&empleado.fecha_contratacion));
 		
 		do
 		{
@@ -874,78 +700,6 @@ void agregar_empleado(FILE* Ptr_empleadosdatf)
 		
 	}while(validar_siono(siono, 2));
 }
-
-void agregar_agenda(FILE* Ptr_agendadatf, FILE* Ptr_Clientesdatf, FILE* Ptr_empleadosdatf, FILE*Ptr_serviciosdatf )
-{
-	struct datos_agenda agenda;
-	char siono[3];
-	
-	do
-	{
-		do
-		{
-			fflush(stdin);
-			printf("Ingresa el numero de agenda: \n");
-			scanf("%d", &agenda.clave);
-		}while(validar_clave(&agenda.clave) || validar_existencia_clave_agenda(&agenda.clave, Ptr_agendadatf));
-		
-		do
-		{
-			fflush(stdin);
-			printf("Ingresa la clave del empleado: \n");
-			scanf("%d", &agenda.clave_empleado);
-		}while(validar_clave(&agenda.clave_empleado) || validar_existencia_clave_empleado(&agenda.clave_empleado, Ptr_empleadosdatf, true));
-		
-		do
-		{
-			fflush(stdin);
-			printf("Ingresa la clave del cliente: \n");
-			scanf("%d", &agenda.clave_cliente);
-		}while(validar_clave(&agenda.clave_cliente) || validar_existencia_clave_cliente(&agenda.clave_cliente, Ptr_Clientesdatf, true));
-		
-		do
-		{
-			printf("Ingresa la clave del servicio: \n");
-			fflush(stdin);
-			scanf("%d", &agenda.clave_servicio);
-		}while(validar_clave(&agenda.clave_servicio) || validar_existencia_clave_servicio(&agenda.clave_servicio, Ptr_serviciosdatf, true));
-		
-		do
-		{
-			printf("Ingresa el estatus: \n");
-			fflush(stdin);
-			gets(agenda.estatus);
-		}while(validar_estatus(agenda.estatus));
-		
-		
-		do
-		{
-			fflush(stdin);
-			printf("--- Fecha de contratacion ---\n");
-			printf("Ingrese dia: \n");
-			scanf("%d",&agenda.fecha_agendada.dia);
-			
-			printf("Ingrese mes: \n");
-			scanf("%d",&agenda.fecha_agendada.mes);
-			
-			printf("Ingrese anio: \n");
-			scanf("%d",&agenda.fecha_agendada.ano);			
-		}while(validar_formato_fecha(&agenda.fecha_agendada));
-				
-		
-		fseek(Ptr_agendadatf, (agenda.clave - 1) * sizeof(struct datos_agenda), SEEK_SET);
-		fwrite(&agenda, sizeof(struct datos_agenda), 1, Ptr_agendadatf);
-			
-		do
-		{
-			printf("Desea agregar un nuevo regristro (Si/No): ");
-			fflush(stdin);
-			gets(siono);	
-		}while(validar_siono(siono, 1));
-		
-	}while(validar_siono(siono, 2));
-}
-
 
 void consultar_empleado(FILE* Ptr_empleadosdatf)
 {
@@ -1085,7 +839,7 @@ void modificar_empleado(FILE* Ptr_empleadosdatf)
 				
 				if(empleadof.clave == clave_buscar)
 				{
-					modificar_menu_empleado(Ptr_empleadosdatf,&empleadof);
+					
 				}
 				else
 					printf(rojo"La clave ingresada no existe\n"reset);
@@ -1146,7 +900,8 @@ void modificar_empleado(FILE* Ptr_empleadosdatf)
 
 void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 {
-	int opc_consulta;
+	char telefono_nuevo[10],nombre_nuevo[100], correo_nuevo[100], calle_nueva[100], colonia_nueva[100], municipio_nuevo[100], estado_nuevo[100],puesto[100];;
+	int opc_consulta, num_exterior_nuevo;
 	do
 	{
 		printf("%20s\n", "Que desea modificar del empleado: ");
@@ -1166,11 +921,11 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 			do
 			{
 				fflush(stdin);
-				printf("Ingrese el nuevo telefono del empleado\n");
-				gets(c->telefono);
-			}while(validar_telefono(c->telefono));
+				printf("Ingrese el nuevo telefono del cliente\n");
+				gets(telefono_nuevo);
+			}while(validar_telefono(telefono_nuevo));
 			
-			
+			strcpy(c->telefono, telefono_nuevo);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_empleados), SEEK_SET);
 			fwrite(c, sizeof(struct datos_empleados),1,Ptr_fileTxt);
 			printf("Empleado modificado con exito\n");
@@ -1182,12 +937,12 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 			{
 				fflush(stdin);
 				printf("Ingrese el nuevo nombre del empleado\n");
-				gets(c->nombre);
-			}while(validar_nombre(c->nombre));
+				gets(nombre_nuevo);
+			}while(validar_nombre(nombre_nuevo));
 			
+			strcpy(c->nombre, nombre_nuevo);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_empleados), SEEK_SET);
 			fwrite(c, sizeof(struct datos_empleados),1,Ptr_fileTxt);
-			
 			printf("Empleado modificado con exito\n");			
 			break;
 			
@@ -1196,34 +951,16 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 			{
 				fflush(stdin);
 				printf("Ingrese el nuevo correo del cliente\n");
-				gets(c->correo);
-			}while(validar_nombre(c->correo));
+				gets(correo_nuevo);
+			}while(validar_nombre(correo_nuevo));
 			
-			
+			strcpy(c->correo, correo_nuevo);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_empleados), SEEK_SET);
 			fwrite(c, sizeof(struct datos_empleados),1,Ptr_fileTxt);
-			
 			printf("Empleado modificado con exito\n");
 			break;
 		
 		case 4:
-			printf("--- Nueva fecha de contratacion ---\n");
-			do
-			{
-				fflush(stdin);
-				printf("Ingrese dia: \n");
-				scanf("%d",&c->fecha_contratacion.dia);
-				
-				printf("Ingrese mes: \n");
-				scanf("%d",&c->fecha_contratacion.mes);
-				
-				printf("Ingrese anio: \n");
-				scanf("%d",&c->fecha_contratacion.ano);			
-			}while(validar_formato_fecha(&c->fecha_contratacion) || validar_fecha_no_futura(&c->fecha_contratacion));
-			
-			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
-            fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
-            printf("Fecha modificada con exito\n");
             break;
             
             
@@ -1234,47 +971,47 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
             {
                 fflush(stdin);
                 printf("Ingrese calle: ");
-                gets(c->direccion_empleado.calle);
-            }while(validar_nombre(c->direccion_empleado.calle));
-            
+                gets(calle_nueva);
+            }while(validar_nombre(calle_nueva));
+            strcpy(c->direccion_empleado.calle,calle_nueva);
             do
             {    
                 fflush(stdin);
                 printf("Ingrese el numero exterior: ");
-                scanf("%d", &c->direccion_empleado.num_exterior);
-            }while(validar_num_casa(&c->direccion_empleado.num_exterior));
-            
+                scanf("%d", &num_exterior_nuevo);
+            }while(validar_num_casa(&num_exterior_nuevo));
+            c->direccion_cliente.num_exterior = num_exterior_nuevo;
             
             do
             {
                 fflush(stdin);
                 printf("Ingrese colonia: ");
-                gets(c->direccion_empleado.colonia);
-            }while(validar_nombre(c->direccion_empleado.colonia));
-            
+                gets(c->direccion_cliente.colonia);
+            }while(validar_nombre(c->direccion_cliente.colonia));
+            strcpy(c->direccion_cliente.colonia, colonia_nueva);
             
             do
             {
                 fflush(stdin);
                 printf("Ingrese municipio: ");
-                gets(c->direccion_empleado.municipio);
-            }while(validar_nombre(c->direccion_empleado.municipio));
-			
+                gets(c->direccion_cliente.municipio);
+            }while(validar_nombre(c->direccion_cliente.municipio));
+			strcpy(c->direccion_cliente.municipio, municipio_nuevo);          
 		    
             do
             {
                 fflush(stdin);
                 printf("Ingrese estado: ");
-                gets(c->direccion_empleado.estado);
-            }while(validar_nombre(c->direccion_empleado.estado));
-            
+                gets(c->direccion_cliente.estado);
+            }while(validar_nombre(c->direccion_cliente.estado));
+            strcpy(c->direccion_cliente.estado, estado_nuevo);
             
             fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
-            fwrite(c, sizeof(struct datos_empleados),1,Ptr_fileTxt);
+            fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
             printf("Direccion modificada con exito\n");
             break;			
 		case 7:
-			printf("Regresando al menu modificar empleado....\n");
+			printf("Regresando al menu modificar cliente....\n");
 			break;
 	}
 }
@@ -1284,7 +1021,7 @@ void borrar_empleado(FILE*ptr_datfilef)
 {
 	struct fecha fecha_blanco = {0,0,0};
 	struct datos_direcciones direccion_blanco ={" " ,0," "," "," " };
-	struct datos_empleados empleado_blanco={0," ", " ",fecha_blanco," "," ", direccion_blanco}, empleadof;
+	struct datos_empleados empleado_blanco={0," ",fecha_blanco," "," ", direccion_blanco}, empleadof;
 	int del_clave;
 	
 	do
@@ -1344,51 +1081,11 @@ bool validar_num_casa(int *numf)
 	return cambio;
 }
 
-bool validar_formato_fecha(struct fecha *fecha_f) 
-{
-    int dias_por_mes[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    bool cambio = false;
-    
-    if (fecha_f->ano < 1900) 
-    {
-        printf(rojo"ERROR: El ano debe ser mayor o igual a 1900 \a\n"reset);
-        cambio = true;
-    }
-    
-    if (fecha_f->mes < 1 || fecha_f->mes > 12) 
-    {
-        printf(rojo"ERROR: El mes debe estar entre 1 y 12 \a\n"reset);
-        cambio = true;
-    }
-
-    if (fecha_f->mes == 2) 
-    {
-        if ((fecha_f->ano % 4 == 0 && fecha_f->ano % 100 != 0) || (fecha_f->ano % 400 == 0)) 
-        {
-            dias_por_mes[1] = 29;
-        } 
-        else 
-        {
-            dias_por_mes[1] = 28;
-        }
-    }
-    
-    if (fecha_f->dia < 1 || fecha_f->dia > dias_por_mes[fecha_f->mes - 1]) 
-    {
-        printf(rojo"ERROR: El dia %d no es valido para el mes %d del ano %d \a\n"reset, 
-               fecha_f->dia, fecha_f->mes, fecha_f->ano);
-        cambio = true;
-    }
-    
-    return cambio; 
-}
-
-
-
-bool validar_fecha_no_futura(struct fecha *fecha_f) 
+bool validar_fecha(struct fecha *fecha_f) 
 {
     time_t tiempoSeg = time(NULL);
     struct tm *tm_info = localtime(&tiempoSeg);
+    int dias_por_mes[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     bool cambio = false;
     
     struct fecha fecha_actual = {
@@ -1397,27 +1094,58 @@ bool validar_fecha_no_futura(struct fecha *fecha_f)
         tm_info->tm_year + 1900 
     };
     
+
+    if (fecha_f->ano < 1900 || fecha_f->ano > fecha_actual.ano) 
+	{
+        printf(rojo"ERROR: El a%co debe estar entre 1900 y %d \a\n"reset, 164, fecha_actual.ano);
+        cambio = true;
+    }
+    
+
+    if (fecha_f->mes < 1 || fecha_f->mes > 12) 
+	{
+        printf(rojo"ERROR: El mes debe estar entre 1 y 12 \a\n"reset);
+        cambio = true;
+    }
+
+    if (fecha_f->mes == 2) 
+	{
+        if ((fecha_f->ano % 4 == 0 && fecha_f->ano % 100 != 0) || (fecha_f->ano % 400 == 0)) 
+		{
+            dias_por_mes[1] = 29;
+        } 
+		else 
+		{
+            dias_por_mes[1] = 28;
+        }
+    }
+    
+    if (fecha_f->dia < 1 || fecha_f->dia > dias_por_mes[fecha_f->mes - 1]) 
+	{
+        printf(rojo"ERROR: El dia %d no es valido para el mes %d del a%co %d \a\n"reset, fecha_f->dia, fecha_f->mes, 164, fecha_f->ano);
+        cambio = true;
+    }
     
     if (fecha_f->ano > fecha_actual.ano) 
-    {
+	{
         printf(rojo"ERROR: No puedes ingresar una fecha futura \a\n"reset);
         cambio = true;
     } 
-    else if (fecha_f->ano == fecha_actual.ano) 
-    {
+	else if (fecha_f->ano == fecha_actual.ano) 
+	{
         if (fecha_f->mes > fecha_actual.mes) 
-        {
+		{
             printf(rojo"ERROR: No puedes ingresar una fecha futura \a\n"reset);
             cambio = true;
         } 
-        else if (fecha_f->mes == fecha_actual.mes && fecha_f->dia > fecha_actual.dia) 
-        {
+		else if (fecha_f->mes == fecha_actual.mes && fecha_f->dia > fecha_actual.dia) 
+		{
             printf(rojo"ERROR: No puedes ingresar una fecha futura \a\n"reset);
             cambio = true;
         }
     }
     
-    return cambio;
+    return cambio; 
 }
 
 bool validar_puesto(char *puestof)
@@ -1437,25 +1165,6 @@ bool validar_puesto(char *puestof)
         estado  = true;
     }
 	return estado;
-}
-
-bool validar_estatus(char *estatusf)
-{
-	bool estado = false;
-	int i=0;
-	
-	while(*(estatusf + i) != '\0')
-    {
-    	*(estatusf + i) = toupper(*(estatusf + i));
-    	i++;
-	}
-	
-	if(strcmp(estatusf, "PROGRAMADO") != 0 && strcmp(estatusf, "REALIZADO") != 0 && strcmp(estatusf, "CANCELADO"))
-    {
-        printf(rojo"ERROR: Ingresa un estatusf existente(programado, realizado o cancelado) \a\n"reset);
-        estado  = true;
-    }
-	return estado;	
 }
 
 void consultar(FILE* Ptr_fileTxt)
@@ -1596,7 +1305,7 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 				
 				if(clientef.clave == clave_ciliente)
 				{
-					modificar_menu_clientes(Ptr_fileTxt, &clientef);
+					modificar_menu(Ptr_fileTxt, &clientef);
 				}
 				else
 					printf(rojo"La clave ingresada no existe\n"reset);
@@ -1616,7 +1325,7 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 				{
 					if(strcmp(clientef.nombre,nombre_ciliente))
 					{
-						modificar_menu_clientes(Ptr_fileTxt,&clientef);
+						modificar_menu(Ptr_fileTxt,&clientef);
 						encontrado = false;
 					}
 				}
@@ -1639,7 +1348,7 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 				{
 					if(strcmp(clientef.telefono,telefono_ciliente))
 					{
-						modificar_menu_clientes(Ptr_fileTxt,&clientef);
+						modificar_menu(Ptr_fileTxt,&clientef);
 						encontrado = false;
 					}
 				}
@@ -1657,8 +1366,8 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 
 void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 {
-	int opc_consulta;
-	
+	char telefono_nuevo[10],nombre_nuevo[100], correo_nuevo[100], calle_nueva[100], colonia_nueva[100], municipio_nuevo[100], estado_nuevo[100];
+	int opc_consulta, num_exterior_nuevo;
 	do
 	{
 		printf("%20s\n", "Que desea modificar del cliente: ");
@@ -1678,12 +1387,12 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 			{
 				fflush(stdin);
 				printf("Ingrese el nuevo telefono del cliente\n");
-				gets(c->telefono);
-			}while(validar_telefono(c->telefono));
+				gets(telefono_nuevo);
+			}while(validar_telefono(telefono_nuevo));
 			
+			strcpy(c->telefono, c->telefono);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
 			fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
-			
 			printf("Cliente modificado con exito\n");
 
 			break;
@@ -1693,12 +1402,12 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 			{
 				fflush(stdin);
 				printf("Ingrese el nuevo nombre del cliente\n");
-				gets(c->nombre);
-			}while(validar_nombre(c->nombre));
+				gets(nombre_nuevo);
+			}while(validar_nombre(nombre_nuevo));
 			
+			strcpy(c->nombre, nombre_nuevo);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
 			fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
-			
 			printf("Cliente modificado con exito\n");			
 			break;
 			
@@ -1707,33 +1416,16 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 			{
 				fflush(stdin);
 				printf("Ingrese el nuevo correo del cliente\n");
-				gets(c->correo);
-			}while(validar_nombre(c->correo));
-		
+				gets(correo_nuevo);
+			}while(validar_nombre(correo_nuevo));
+			
+			strcpy(c->correo, correo_nuevo);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
 			fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
-			
 			printf("Cliente modificado con exito\n");
 			break;
 		
 		case 4:
-			printf("--- Nueva fecha de nacimiento ---\n");
-			do
-			{
-				fflush(stdin);
-				printf("Ingrese dia: \n");
-				scanf("%d",&c->fecha_nacimiento.dia);
-				
-				printf("Ingrese mes: \n");
-				scanf("%d",&c->fecha_nacimiento.mes);
-				
-				printf("Ingrese anio: \n");
-				scanf("%d",&c->fecha_nacimiento.ano);			
-			}while(validar_formato_fecha(&c->fecha_nacimiento) || validar_fecha_no_futura(&c->fecha_nacimiento));
-			
-			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
-            fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
-            printf("Fecha modificada con exito\n");
             break;
             
             
@@ -1746,14 +1438,14 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
                 printf("Ingrese calle: ");
                 gets(c->direccion_cliente.calle);
             }while(validar_nombre(c->direccion_cliente.calle));
-            
+            strcpy(c->direccion_cliente.calle, calle_nueva);
             do
             {    
                 fflush(stdin);
                 printf("Ingrese el numero exterior: ");
                 scanf("%d", &c->direccion_cliente.num_exterior);
             }while(validar_num_casa(&c->direccion_cliente.num_exterior));
-            
+            c->direccion_cliente.num_exterior = num_exterior_nuevo;
             
             do
             {
@@ -1761,7 +1453,7 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
                 printf("Ingrese colonia: ");
                 gets(c->direccion_cliente.colonia);
             }while(validar_nombre(c->direccion_cliente.colonia));
-           
+            strcpy(c->direccion_cliente.colonia, colonia_nueva);
             
             do
             {
@@ -1769,7 +1461,7 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
                 printf("Ingrese municipio: ");
                 gets(c->direccion_cliente.municipio);
             }while(validar_nombre(c->direccion_cliente.municipio));
-		     
+			strcpy(c->direccion_cliente.municipio, municipio_nuevo);          
 		    
             do
             {
@@ -1777,7 +1469,7 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
                 printf("Ingrese estado: ");
                 gets(c->direccion_cliente.estado);
             }while(validar_nombre(c->direccion_cliente.estado));
-            
+            strcpy(c->direccion_cliente.estado, estado_nuevo);
             
             fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
             fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
@@ -1793,7 +1485,7 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 
 // hasta aqui
 
-void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_ServiciosdatF, FILE*ptr_agendadatF)
+void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_ServiciosdatF)
 {	
 	struct fecha fecha_blanco = {0,0,0};
 	struct tiempo tiempo_blanco = {0,0};
@@ -1801,8 +1493,6 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 	struct datos_clientes cliente_blanco={0," ",fecha_blanco," "," ", direccion_blanco};
 	struct datos_empleados empleados_blanco={0," "," ",fecha_blanco," "," ",direccion_blanco};
 	struct datos_servicios servicios_blanco={0," ",0.0,tiempo_blanco};
-	struct datos_agenda agenda_blanco = {0,0,0,0," ",fecha_blanco,0};
-
 
 
 	int i;
@@ -1828,7 +1518,7 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 		Ptr_EmpleadosdatF = fopen("empleados.dat","w");
 		
 		for(i=0; i<100; i++)
-			fwrite(&empleados_blanco, sizeof(struct datos_empleados), 1, Ptr_EmpleadosdatF);
+			fwrite(&empleados_blanco, sizeof(struct datos_clientes), 1, Ptr_EmpleadosdatF);
 		
 		fclose(Ptr_EmpleadosdatF);
 	}
@@ -1848,19 +1538,6 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 	}
 	else
 		printf("archivo servicios encontrado\n");
-		
-	if((ptr_agendadatF = fopen("agenda.dat","r+"))== NULL) 
-	{
-		printf("No se encontro archivo agenda....creando archivo agenda\n");
-		ptr_agendadatF = fopen("agenda.dat","w");
-		
-		for(i=0; i<100; i++)
-			fwrite(&agenda_blanco, sizeof(struct datos_agenda), 1, ptr_agendadatF);
-		
-		fclose(ptr_agendadatF);
-	}
-	else
-		printf("archivo empleados encontrado\n");
 		
 }
 
@@ -1893,7 +1570,7 @@ void borrar_cliente(FILE*ptr_datfilef)
 }
 
 
-void agregar_servicios(FILE* Ptr_Serviciosdatf)
+void agregar_servicio(FILE* Ptr_Serviciosdatf)
 {
 	struct datos_servicios servicio;
 	char siono[3];
@@ -1905,7 +1582,7 @@ void agregar_servicios(FILE* Ptr_Serviciosdatf)
 			printf("Ingresa la clave del servicio: \n");
 			fflush(stdin);
 			scanf("%d", &servicio.clave);
-		}while(validar_clave(&servicio.clave) || validar_existencia_clave_servicio(&servicio.clave, Ptr_Serviciosdatf, false));
+		}while(validar_clave(&servicio.clave) || validar_existencia_clave_servicio(&servicio.clave, Ptr_Serviciosdatf));
 		
 		do
 		{
@@ -1930,10 +1607,7 @@ void agregar_servicios(FILE* Ptr_Serviciosdatf)
 		{
 			printf("Ingresa el precio del servicio: \n");
 			scanf("%f",&servicio.precio);
-		}while(validar_precio(&servicio.precio));
-		
-		fseek(Ptr_Serviciosdatf, (servicio.clave - 1) * sizeof(struct datos_servicios), SEEK_SET);
-		fwrite(&servicio ,sizeof(struct datos_servicios), 1, Ptr_Serviciosdatf);
+		}while(validar_precio(servicio.precio));
 		
 		do
 		{
@@ -2027,148 +1701,6 @@ void consultar_servicio(FILE* ptrservicio)
 	}while(opc_consulta != 2);
 }
 
-void consultar_agenda(FILE *Ptr_agenda)
-{
-	struct datos_agenda agendaf={0};
-	int opc_consulta,clave_agenda, clave_serivicio;
-	struct fecha fecha_consulta;
-	bool encontrado;
-
-	do
-	{
-		do
-		{
-			printf("\n%20s\n", "Consultar por: ");
-			printf("%-15s\n","1.-Numero de agenda");
-			printf("%-15s\n","2.-Clave de servicio");
-			printf("%-15s\n","3.-Consultar por fecha");
-			printf("%-15s\n","4.-Salir");
-			scanf("%d",&opc_consulta);
-		}while(opc_consulta < 1 || opc_consulta > 4);
-		
-		switch(opc_consulta)
-		{
-			case 1:
-				do
-				{
-					fflush(stdin);
-					printf("Ingrese la clave del cliente a consultar\n");
-					scanf("%d",&clave_agenda);
-				}while(validar_clave(&clave_agenda));
-				
-				fseek(Ptr_agenda, (clave_agenda - 1) * sizeof(struct datos_agenda), SEEK_SET);
-				fread(&agendaf, sizeof(struct datos_agenda),1,Ptr_agenda);
-				
-				if(agendaf.clave == clave_agenda)
-				{
-					printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "CLAVE", "CLAVE EMPLEADO", "CLAVE CLIENTE", "CLAVE SERVICIO", "ESTATUS", "FECHA AGENDADA","HORA");
-					printf("%-20d%-20d%-20d%-20d%-20s%-2d/%-1d/%-3d%20d%\n",agendaf.clave, agendaf.clave_empleado,agendaf.clave_cliente, agendaf.clave_servicio, agendaf.estatus, agendaf.fecha_agendada.dia, agendaf.fecha_agendada.mes, agendaf.fecha_agendada.ano, agendaf.hora);
-				}
-				else
-					printf(rojo"La clave ingresada no existe\n"reset);
-				break;
-				
-			case 2:
-			    do
-			    {
-			        fflush(stdin);
-			        printf("Ingrese la clave del servicio a consultar\n");
-			        scanf("%d",&clave_serivicio);
-			    }while(validar_clave(&clave_serivicio));
-			    
-			    rewind(Ptr_agenda);
-			    encontrado = false;
-			    
-			    
-			    while(!feof(Ptr_agenda))
-			    {
-			        fread(&agendaf, sizeof(struct datos_agenda),1,Ptr_agenda);
-			        if(agendaf.clave_servicio == clave_serivicio && !feof(Ptr_agenda))
-			        {
-			            encontrado = true;
-			        }
-			    }
-			    
-			    if(encontrado)
-			    {
-			        printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "CLAVE", "CLAVE EMPLEADO", "CLAVE CLIENTE", "CLAVE SERVICIO", "ESTATUS", "FECHA AGENDADA","HORA");
-			        
-			        rewind(Ptr_agenda);
-			        while(!feof(Ptr_agenda))
-			        {
-			            fread(&agendaf, sizeof(struct datos_agenda),1,Ptr_agenda);
-			            if(agendaf.clave_servicio == clave_serivicio && !feof(Ptr_agenda))
-			            {
-			                printf("%-20d%-20d%-20d%-20d%-20s%-2d/%-1d/%-3d%20d\n",agendaf.clave, agendaf.clave_empleado,agendaf.clave_cliente, agendaf.clave_servicio, agendaf.estatus, agendaf.fecha_agendada.dia, agendaf.fecha_agendada.mes, agendaf.fecha_agendada.ano, agendaf.hora);
-			            }
-			        }
-			    }
-			    else
-			    {
-			        printf(rojo"La clave de servicio ingresada no existe\n"reset);
-			    }
-				break;
-				
-			case 3: 
-				do
-				{
-				    fflush(stdin);
-				    printf("--- Ingrese la fecha a consultar ---\n");
-				    printf("Ingrese dia: \n");
-				    scanf("%d",&fecha_consulta.dia);
-				        
-				    printf("Ingrese mes: \n");
-				    scanf("%d",&fecha_consulta.mes);
-				        
-				    printf("Ingrese anio: \n");
-				    scanf("%d",&fecha_consulta.ano);			
-				}while(validar_formato_fecha(&fecha_consulta));
-				    
-				rewind(Ptr_agenda); 
-				encontrado = false;
-				    
-				while(!feof(Ptr_agenda))
-				{
-				    fread(&agendaf, sizeof(struct datos_agenda),1,Ptr_agenda);
-				    if(!feof(Ptr_agenda) && agendaf.fecha_agendada.dia == fecha_consulta.dia && agendaf.fecha_agendada.mes == fecha_consulta.mes && agendaf.fecha_agendada.ano == fecha_consulta.ano)
-				    {
-			           encontrado = true;
-
-				    }
-				}
-				    
-				if(encontrado)
-				{
-				    printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "CLAVE", "CLAVE EMPLEADO", "CLAVE CLIENTE", "CLAVE SERVICIO", "ESTATUS", "FECHA AGENDADA","HORA");
-				        
-				    rewind(Ptr_agenda); 
-				    while(!feof(Ptr_agenda))
-				    {
-				        fread(&agendaf, sizeof(struct datos_agenda),1,Ptr_agenda);
-				        if(!feof(Ptr_agenda) && agendaf.fecha_agendada.dia == fecha_consulta.dia && agendaf.fecha_agendada.mes == fecha_consulta.mes && agendaf.fecha_agendada.ano == fecha_consulta.ano)
-				        {
-				            printf("%-20d%-20d%-20d%-20d%-20s%-2d/%-1d/%-3d%20d\n", agendaf.clave, agendaf.clave_empleado, agendaf.clave_cliente,  agendaf.clave_servicio, agendaf.estatus, 
-				                    agendaf.fecha_agendada.dia, agendaf.fecha_agendada.mes, agendaf.fecha_agendada.ano, agendaf.hora);
-				                
-				            encontrado = false;
-				        }
-				    }
-				}
-				else
-				{
-				    printf(rojo"No se encontraron citas para la fecha %d/%d/%d\n"reset, fecha_consulta.dia, fecha_consulta.mes, fecha_consulta.ano);
-				}
-				break;
-				
-				
-				case 4:
-					printf("Regresando al menu agenda...\n");
-					break;
-			}
-		
-	}while(opc_consulta != 4);
-}
-
 // importante servicios
 void modificar_servicio(FILE* ptrservicio)
 {
@@ -2200,7 +1732,7 @@ void modificar_servicio(FILE* ptrservicio)
 				
 				if(serviciof.clave == clave_servicio)
 				{
-					modificar_menu_servicio(ptrservicio, &serviciof);
+					modificar_menu(ptrservicio, &serviciof);
 				}
 				else
 					printf(rojo"La clave ingresada no existe\n"reset);
@@ -2215,8 +1747,9 @@ void modificar_servicio(FILE* ptrservicio)
 
 void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
 {
-	int opc_consulta;
-
+	int opc_consulta,hora,minutos;
+	char descripcion[100];
+	float precio;
 	do
 	{
 		printf("%20s\n", "Que desea modificar del cliente: ");
@@ -2234,12 +1767,12 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
 			{
 				fflush(stdin);
 				printf("Ingrese la nueva descripcion del servicio\n");
-				gets(c->descripcion);
-			}while(validar_nombre(c->descripcion));
+				gets(descripcion);
+			}while(validar_nombre(descripcion));
 			
+			strcpy(c->descripcion, descripcion);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_servicios), SEEK_SET);
 			fwrite(c, sizeof(struct datos_servicios),1,Ptr_fileTxt);
-			
 			printf("Servicio modificado con exito\n");
 			break;
 			
@@ -2248,9 +1781,10 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
 			{
 				fflush(stdin);
 				printf("Ingrese el nuevo precio del servicio\n");
-				scanf("%f",&c->precio);
-			}while(validar_precio(&c->precio));
+				scanf("%f",&precio);
+			}while(validar_precio(precio));
 			
+			c->precio = precio);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_servicios), SEEK_SET);
 			fwrite(c, sizeof(struct datos_servicios),1,Ptr_fileTxt);
 			printf("Cliente modificado con exito\n");			
@@ -2265,7 +1799,7 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
 				scanf("%d",&c->duracion.hora);
 				printf("Ingrese minutos: \n");
 				scanf("%d",&c->duracion.minutos);
-			}while(validar_duracion(&c->duracion));
+			}while(validar_duracion(c->duracion));
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
 			fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
 			printf("servicios modificado con exito\n");
@@ -2279,7 +1813,7 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
 // falta una funcion
 void borrar_servicio(FILE* ptr_datfilef)
 {
-	struct tiempo tiempo_blanco = {0,0};
+	struct  tiempo = {0,0};
 	struct datos_servicios servicio_blanco={0," ",0.0,tiempo_blanco}, serviciof;
 	int del_clave;
 	
@@ -2301,32 +1835,4 @@ void borrar_servicio(FILE* ptr_datfilef)
 	}
 	else 
 		printf("Servicio no encontrado....");
-}
-
-
-void borrar_agenda(FILE*ptr_datfilef)
-{
-	struct fecha fecha_blanco = {0,0,0};
-	struct datos_agenda agenda_blanco={0,0,0,0," ",fecha_blanco,0}, agendaf;
-	int del_clave;
-	
-	do
-	{
-		fflush(stdin);
-		printf("ingrese el numero de agendado a eliminar: \n");
-		scanf("%d",&del_clave);
-	}while(validar_clave(&del_clave));
-	
-	fseek(ptr_datfilef, (del_clave-1)*sizeof(struct datos_clientes),SEEK_SET);
-	fread(&agendaf, sizeof(struct datos_clientes),1,ptr_datfilef);
-	
-	if(agendaf.clave == del_clave)
-	{
-		fseek(ptr_datfilef, (del_clave-1)*sizeof(struct datos_agenda),SEEK_SET);
-		fwrite(&agendaf, sizeof(struct datos_agenda),1,ptr_datfilef);
-		printf("Usuario eliminado con exito...");	
-	}
-	else 
-		printf("Usuario no encontrado....");
-	
 }
