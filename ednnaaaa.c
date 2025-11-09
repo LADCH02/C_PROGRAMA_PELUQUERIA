@@ -62,6 +62,7 @@ struct datos_agenda{
 	int clave;
 	int clave_cliente;
 	int clave_empleado;
+	int clave_servicio;
 	char estatus[100];
 	struct fecha fecha_contratacion;
 	int hora;		
@@ -107,12 +108,13 @@ void consultar_servicio(FILE*);
 void modificar_servicio(FILE*);
 void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c);
 void borrar_servicio(FILE*);
-bool validar_existencia_clave_servicio(int *, FILE *);
+bool validar_existencia_clave_servicio(int *, FILE *, bool);
 
 // funciones usadas para agenda
-void agenda(FILE*, FILE*, FILE*);
-void agregar_agenda(FILE* , FILE* , FILE* );
+void agenda(FILE*, FILE*, FILE*, FILE*);
+void agregar_agenda(FILE* , FILE* , FILE*, FILE* );
 bool validar_existencia_clave_agenda(int *, FILE *);
+bool validar_estatus(char *);
 
 
 // Espacios
@@ -160,7 +162,7 @@ main()
 				servicios(ptr_serviciosdat);
 				break;
 			case 4:
-				agenda(ptr_agendadat, ptr_clientesdat, ptr_empleadosdat);
+				agenda(ptr_agendadat, ptr_clientesdat, ptr_empleadosdat,  ptr_serviciosdat);
 				break;
 				
 		}
@@ -374,7 +376,7 @@ void servicios(FILE* Ptr_fileservicio)
 	}while(opc_sub_menu != 'S' && opc_sub_menu != 's');
 }
 
-void agenda(FILE *Ptr_fileagenda, FILE *Ptr_filecliente, FILE *Ptr_fileempleado)
+void agenda(FILE *Ptr_fileagenda, FILE *Ptr_filecliente, FILE *Ptr_fileempleado, FILE *Ptr_fileservicio)
 {
 	char opc_sub_menu;
 	
@@ -395,14 +397,15 @@ void agenda(FILE *Ptr_fileagenda, FILE *Ptr_filecliente, FILE *Ptr_fileempleado)
 		switch (opc_sub_menu)
 		{
 			case 'a' : case 'A':
-			if((Ptr_fileagenda = fopen("agenda.dat","r+")) == NULL || (Ptr_filecliente = fopen("clientes1.dat","r+")) == NULL || (Ptr_fileempleado = fopen("empleados.dat","r+")) == NULL)
+			if((Ptr_fileagenda = fopen("agenda.dat","r+")) == NULL || (Ptr_filecliente = fopen("clientes1.dat","r+")) == NULL || (Ptr_fileempleado = fopen("empleados.dat","r+")) == NULL ||  (Ptr_fileservicio = fopen("servicios.dat","r+")) == NULL)
 				printf("No se abrio el archivo");
 			else
 			{
-				agregar_agenda(Ptr_fileagenda, Ptr_filecliente,Ptr_fileempleado);
+				agregar_agenda(Ptr_fileagenda, Ptr_filecliente,Ptr_fileempleado, Ptr_fileservicio);
 				fclose(Ptr_fileagenda);
 				fclose(Ptr_filecliente);
 				fclose(Ptr_fileempleado);
+				fclose(Ptr_fileservicio);
 			}
 			break;	
 			
@@ -562,23 +565,41 @@ bool validar_existencia_clave_empleado(int *clavef, FILE *ptrf, bool debe_existi
     return cambio;
 }
 
-bool validar_existencia_clave_servicio(int *clavef, FILE *ptrf)
+bool validar_existencia_clave_servicio(int *clavef, FILE *ptrf, bool debe_existir)
 {
-	struct datos_servicios serviciof;
-	bool	cambio = false;
-	
-	while(!feof(ptrf))
+    struct datos_servicios serviciof;
+    bool cambio = false;
+    bool encontrado = false;
+    
+    while(!feof(ptrf))
+    {
+        fread(&serviciof, sizeof(struct datos_servicios), 1, ptrf);    
+        if(*clavef == serviciof.clave)
+        {
+            encontrado = true;
+            break;
+        }
+    }
+    rewind(ptrf);
+    
+    if(debe_existir) 
 	{
-		fread(&serviciof, sizeof(struct datos_servicios), 1, ptrf);	
-		if(*clavef == serviciof.clave)
+        if(!encontrado) 
 		{
-			printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
-			cambio = true;
-		}
-	}
-	rewind(ptrf);
-	
-	return cambio;
+            printf(rojo"ERROR: La clave de servicio no existe \a\n"reset);
+            cambio = true;
+        }
+    } 
+	else 
+	{
+        if(encontrado) 
+		{
+            printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
+            cambio = true;
+        }
+    }
+    
+    return cambio;
 }
 
 bool validar_existencia_clave_agenda(int *clave_agendaf, FILE *Ptr_agendadatf)
@@ -850,7 +871,7 @@ void agregar_empleado(FILE* Ptr_empleadosdatf)
 	}while(validar_siono(siono, 2));
 }
 
-void agregar_agenda(FILE* Ptr_agendadatf, FILE* Ptr_Clientesdatf, FILE* Ptr_empleadosdatf)
+void agregar_agenda(FILE* Ptr_agendadatf, FILE* Ptr_Clientesdatf, FILE* Ptr_empleadosdatf, FILE*Ptr_serviciosdatf )
 {
 	struct datos_agenda agenda;
 	char siono[3];
@@ -880,10 +901,17 @@ void agregar_agenda(FILE* Ptr_agendadatf, FILE* Ptr_Clientesdatf, FILE* Ptr_empl
 		
 		do
 		{
+			printf("Ingresa la clave del servicio: \n");
+			fflush(stdin);
+			scanf("%d", &agenda.clave_servicio);
+		}while(validar_clave(&agenda.clave_servicio) || validar_existencia_clave_servicio(&agenda.clave_servicio, Ptr_serviciosdatf, true));
+		
+		do
+		{
 			printf("Ingresa el estatus: \n");
 			fflush(stdin);
 			gets(agenda.estatus);
-		}while(validar_nombre(agenda.estatus));
+		}while(validar_estatus(agenda.estatus));
 		
 		
 		do
@@ -1398,6 +1426,25 @@ bool validar_puesto(char *puestof)
 	return estado;
 }
 
+bool validar_estatus(char *estatusf)
+{
+	bool estado = false;
+	int i=0;
+	
+	while(*(estatusf + i) != '\0')
+    {
+    	*(estatusf + i) = toupper(*(estatusf + i));
+    	i++;
+	}
+	
+	if(strcmp(estatusf, "PROGRAMADO") != 0 && strcmp(estatusf, "REALIZADO") != 0 && strcmp(estatusf, "CANCELADO"))
+    {
+        printf(rojo"ERROR: Ingresa un estatusf existente(programado, realizado o cancelado) \a\n"reset);
+        estado  = true;
+    }
+	return estado;	
+}
+
 void consultar(FILE* Ptr_fileTxt)
 {
 	struct datos_clientes clientef={0};
@@ -1741,7 +1788,7 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 	struct datos_clientes cliente_blanco={0," ",fecha_blanco," "," ", direccion_blanco};
 	struct datos_empleados empleados_blanco={0," "," ",fecha_blanco," "," ",direccion_blanco};
 	struct datos_servicios servicios_blanco={0," ",0.0,tiempo_blanco};
-	struct datos_agenda agenda_blanco = {0,0,0," ",fecha_blanco,0};
+	struct datos_agenda agenda_blanco = {0,0,0,0," ",fecha_blanco,0};
 
 
 
@@ -1845,7 +1892,7 @@ void agregar_servicios(FILE* Ptr_Serviciosdatf)
 			printf("Ingresa la clave del servicio: \n");
 			fflush(stdin);
 			scanf("%d", &servicio.clave);
-		}while(validar_clave(&servicio.clave) || validar_existencia_clave_servicio(&servicio.clave, Ptr_Serviciosdatf));
+		}while(validar_clave(&servicio.clave) || validar_existencia_clave_servicio(&servicio.clave, Ptr_Serviciosdatf, false));
 		
 		do
 		{
