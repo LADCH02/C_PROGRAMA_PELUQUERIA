@@ -433,6 +433,7 @@ bool validar_existencia_clave_cliente(int *clavef, FILE *ptrf, bool debe_existir
     bool cambio = false;
     bool encontrado = false;
     
+    rewind(ptrf);
     while(!feof(ptrf))
     {
         fread(&clientesf, sizeof(struct datos_clientes), 1, ptrf);    
@@ -442,7 +443,7 @@ bool validar_existencia_clave_cliente(int *clavef, FILE *ptrf, bool debe_existir
             break;
         }
     }
-    rewind(ptrf);
+
     
     if(debe_existir) 
 	{
@@ -470,6 +471,7 @@ bool validar_existencia_clave_empleado(int *clavef, FILE *ptrf, bool debe_existi
     bool cambio = false;
     bool encontrado = false;
     
+    rewind(ptrf);
     while(!feof(ptrf))
     {
         fread(&empleadof, sizeof(struct datos_empleados), 1, ptrf);    
@@ -507,6 +509,7 @@ bool validar_existencia_clave_servicio(int *clavef, FILE *ptrf, bool debe_existi
     bool cambio = false;
     bool encontrado = false;
     
+    rewind(ptrf);
     while(!feof(ptrf))
     {
         fread(&serviciof, sizeof(struct datos_servicios), 1, ptrf);    
@@ -542,6 +545,8 @@ bool validar_existencia_clave_agenda(int *clave_agendaf, FILE *Ptr_agendadatf)
 {
 	struct datos_agenda agendaf;
 	bool	cambio = false;
+	
+	rewind(Ptr_agendadatf);
 	while(!feof(Ptr_agendadatf))
 	{
 		fread(&agendaf, sizeof(struct datos_agenda), 1, Ptr_agendadatf);	
