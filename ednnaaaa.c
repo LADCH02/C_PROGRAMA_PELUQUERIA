@@ -2031,17 +2031,20 @@ void consultar_agenda(FILE *Ptr_agenda)
 {
 	struct datos_agenda agendaf={0};
 	int opc_consulta,clave_agenda, clave_serivicio;
-	bool encontrado = true;
+	struct fecha fecha_consulta;
+	bool encontrado;
 
 	do
 	{
 		do
 		{
-			printf("%20s\n", "Consultar por: ");
-			printf("%-15s\n","1.-Numero de servicio");
-			printf("%-15s\n","2.-Salir");
+			printf("\n%20s\n", "Consultar por: ");
+			printf("%-15s\n","1.-Numero de agenda");
+			printf("%-15s\n","2.-Clave de servicio");
+			printf("%-15s\n","3.-Consultar por fecha");
+			printf("%-15s\n","4.-Salir");
 			scanf("%d",&opc_consulta);
-		}while(opc_consulta < 1 || opc_consulta > 2);
+		}while(opc_consulta < 1 || opc_consulta > 4);
 		
 		switch(opc_consulta)
 		{
@@ -2059,17 +2062,111 @@ void consultar_agenda(FILE *Ptr_agenda)
 				if(agendaf.clave == clave_agenda)
 				{
 					printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "CLAVE", "CLAVE EMPLEADO", "CLAVE CLIENTE", "CLAVE SERVICIO", "ESTATUS", "FECHA AGENDADA","HORA");
-					printf("%-20d%-20d%-20d%-20d%-20s%-2d/%-1d/%-3d%20D%",agendaf.clave, agendaf.clave_empleado,agendaf.clave_cliente, agendaf.clave_servicio, agendaf.estatus, agendaf.fecha_agendada.dia, agendaf.fecha_agendada.mes, agendaf.fecha_agendada.ano, agendaf.hora);
+					printf("%-20d%-20d%-20d%-20d%-20s%-2d/%-1d/%-3d%20d%\n",agendaf.clave, agendaf.clave_empleado,agendaf.clave_cliente, agendaf.clave_servicio, agendaf.estatus, agendaf.fecha_agendada.dia, agendaf.fecha_agendada.mes, agendaf.fecha_agendada.ano, agendaf.hora);
 				}
 				else
 					printf(rojo"La clave ingresada no existe\n"reset);
 				break;
+				
 			case 2:
-				printf("Regresando al menu empleados...\n");
+			    do
+			    {
+			        fflush(stdin);
+			        printf("Ingrese la clave del servicio a consultar\n");
+			        scanf("%d",&clave_serivicio);
+			    }while(validar_clave(&clave_serivicio));
+			    
+			    rewind(Ptr_agenda);
+			    encontrado = false;
+			    
+			    
+			    while(!feof(Ptr_agenda))
+			    {
+			        fread(&agendaf, sizeof(struct datos_agenda),1,Ptr_agenda);
+			        if(agendaf.clave_servicio == clave_serivicio && !feof(Ptr_agenda))
+			        {
+			            encontrado = true;
+			        }
+			    }
+			    
+			    if(encontrado)
+			    {
+			        printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "CLAVE", "CLAVE EMPLEADO", "CLAVE CLIENTE", "CLAVE SERVICIO", "ESTATUS", "FECHA AGENDADA","HORA");
+			        
+			        rewind(Ptr_agenda);
+			        while(!feof(Ptr_agenda))
+			        {
+			            fread(&agendaf, sizeof(struct datos_agenda),1,Ptr_agenda);
+			            if(agendaf.clave_servicio == clave_serivicio && !feof(Ptr_agenda))
+			            {
+			                printf("%-20d%-20d%-20d%-20d%-20s%-2d/%-1d/%-3d%20d\n",agendaf.clave, agendaf.clave_empleado,agendaf.clave_cliente, agendaf.clave_servicio, agendaf.estatus, agendaf.fecha_agendada.dia, agendaf.fecha_agendada.mes, agendaf.fecha_agendada.ano, agendaf.hora);
+			            }
+			        }
+			    }
+			    else
+			    {
+			        printf(rojo"La clave de servicio ingresada no existe\n"reset);
+			    }
 				break;
-		}
+				
+			case 3: 
+				do
+				{
+				    fflush(stdin);
+				    printf("--- Ingrese la fecha a consultar ---\n");
+				    printf("Ingrese dia: \n");
+				    scanf("%d",&fecha_consulta.dia);
+				        
+				    printf("Ingrese mes: \n");
+				    scanf("%d",&fecha_consulta.mes);
+				        
+				    printf("Ingrese anio: \n");
+				    scanf("%d",&fecha_consulta.ano);			
+				}while(validar_formato_fecha(&fecha_consulta));
+				    
+				rewind(Ptr_agenda); 
+				encontrado = false;
+				    
+				while(!feof(Ptr_agenda))
+				{
+				    fread(&agendaf, sizeof(struct datos_agenda),1,Ptr_agenda);
+				    if(!feof(Ptr_agenda) && agendaf.fecha_agendada.dia == fecha_consulta.dia && agendaf.fecha_agendada.mes == fecha_consulta.mes && agendaf.fecha_agendada.ano == fecha_consulta.ano)
+				    {
+			           encontrado = true;
+
+				    }
+				}
+				    
+				if(encontrado)
+				{
+				    printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "CLAVE", "CLAVE EMPLEADO", "CLAVE CLIENTE", "CLAVE SERVICIO", "ESTATUS", "FECHA AGENDADA","HORA");
+				        
+				    rewind(Ptr_agenda); 
+				    while(!feof(Ptr_agenda))
+				    {
+				        fread(&agendaf, sizeof(struct datos_agenda),1,Ptr_agenda);
+				        if(!feof(Ptr_agenda) && agendaf.fecha_agendada.dia == fecha_consulta.dia && agendaf.fecha_agendada.mes == fecha_consulta.mes && agendaf.fecha_agendada.ano == fecha_consulta.ano)
+				        {
+				            printf("%-20d%-20d%-20d%-20d%-20s%-2d/%-1d/%-3d%20d\n", agendaf.clave, agendaf.clave_empleado, agendaf.clave_cliente,  agendaf.clave_servicio, agendaf.estatus, 
+				                    agendaf.fecha_agendada.dia, agendaf.fecha_agendada.mes, agendaf.fecha_agendada.ano, agendaf.hora);
+				                
+				            encontrado = false;
+				        }
+				    }
+				}
+				else
+				{
+				    printf(rojo"No se encontraron citas para la fecha %d/%d/%d\n"reset, fecha_consulta.dia, fecha_consulta.mes, fecha_consulta.ano);
+				}
+				break;
+				
+				
+				case 4:
+					printf("Regresando al menu agenda...\n");
+					break;
+			}
 		
-	}while(opc_consulta != 2);
+	}while(opc_consulta != 4);
 }
 
 // importante servicios
