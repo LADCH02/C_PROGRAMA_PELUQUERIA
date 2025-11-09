@@ -64,7 +64,7 @@ struct datos_agenda{
 	int clave_empleado;
 	int clave_servicio;
 	char estatus[100];
-	struct fecha fecha_contratacion;
+	struct fecha fecha_agendada;
 	int hora;		
 };
 
@@ -76,7 +76,8 @@ bool validar_sub_menu(char );
 bool validar_siono(char *, int);
 bool validar_clave(int *);
 bool validar_nombre(char *);
-bool validar_fecha(struct fecha *);
+bool validar_formato_fecha(struct fecha *);
+bool validar_fecha_no_futura(struct fecha *);
 bool validar_telefono(char *);
 bool validar_num_casa(int *);
 bool validar_puesto(char *);
@@ -695,7 +696,7 @@ void agregar_cliente(FILE* Ptr_Clientesdatf )
 			
 			printf("Ingrese anio: \n");
 			scanf("%d",&cliente.fecha_nacimiento.ano);			
-		}while(validar_fecha(&cliente.fecha_nacimiento));
+		}while(validar_formato_fecha(&cliente.fecha_nacimiento) || validar_fecha_no_futura(&cliente.fecha_nacimiento));
 		
 		do
 		{
@@ -803,7 +804,7 @@ void agregar_empleado(FILE* Ptr_empleadosdatf)
 			
 			printf("Ingrese anio: \n");
 			scanf("%d",&empleado.fecha_contratacion.ano);			
-		}while(validar_fecha(&empleado.fecha_contratacion));
+		}while(validar_formato_fecha(&empleado.fecha_contratacion) || validar_fecha_no_futura(&empleado.fecha_contratacion));
 		
 		do
 		{
@@ -919,14 +920,14 @@ void agregar_agenda(FILE* Ptr_agendadatf, FILE* Ptr_Clientesdatf, FILE* Ptr_empl
 			fflush(stdin);
 			printf("--- Fecha de contratacion ---\n");
 			printf("Ingrese dia: \n");
-			scanf("%d",&agenda.fecha_contratacion.dia);
+			scanf("%d",&agenda.fecha_agendada.dia);
 			
 			printf("Ingrese mes: \n");
-			scanf("%d",&agenda.fecha_contratacion.mes);
+			scanf("%d",&agenda.fecha_agendada.mes);
 			
 			printf("Ingrese anio: \n");
-			scanf("%d",&agenda.fecha_contratacion.ano);			
-		}while(validar_fecha(&agenda.fecha_contratacion));
+			scanf("%d",&agenda.fecha_agendada.ano);			
+		}while(validar_formato_fecha(&agenda.fecha_agendada));
 				
 		
 		fseek(Ptr_agendadatf, (agenda.clave - 1) * sizeof(struct datos_agenda), SEEK_SET);
@@ -1215,7 +1216,7 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 				
 				printf("Ingrese anio: \n");
 				scanf("%d",&c->fecha_contratacion.ano);			
-			}while(validar_fecha(&c->fecha_contratacion));
+			}while(validar_formato_fecha(&c->fecha_contratacion) || validar_fecha_no_futura(&c->fecha_contratacion));
 			
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
             fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
@@ -1340,11 +1341,51 @@ bool validar_num_casa(int *numf)
 	return cambio;
 }
 
-bool validar_fecha(struct fecha *fecha_f) 
+bool validar_formato_fecha(struct fecha *fecha_f) 
+{
+    int dias_por_mes[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    bool cambio = false;
+    
+    if (fecha_f->ano < 1900) 
+    {
+        printf(rojo"ERROR: El ano debe ser mayor o igual a 1900 \a\n"reset);
+        cambio = true;
+    }
+    
+    if (fecha_f->mes < 1 || fecha_f->mes > 12) 
+    {
+        printf(rojo"ERROR: El mes debe estar entre 1 y 12 \a\n"reset);
+        cambio = true;
+    }
+
+    if (fecha_f->mes == 2) 
+    {
+        if ((fecha_f->ano % 4 == 0 && fecha_f->ano % 100 != 0) || (fecha_f->ano % 400 == 0)) 
+        {
+            dias_por_mes[1] = 29;
+        } 
+        else 
+        {
+            dias_por_mes[1] = 28;
+        }
+    }
+    
+    if (fecha_f->dia < 1 || fecha_f->dia > dias_por_mes[fecha_f->mes - 1]) 
+    {
+        printf(rojo"ERROR: El dia %d no es valido para el mes %d del ano %d \a\n"reset, 
+               fecha_f->dia, fecha_f->mes, fecha_f->ano);
+        cambio = true;
+    }
+    
+    return cambio; 
+}
+
+
+
+bool validar_fecha_no_futura(struct fecha *fecha_f) 
 {
     time_t tiempoSeg = time(NULL);
     struct tm *tm_info = localtime(&tiempoSeg);
-    int dias_por_mes[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     bool cambio = false;
     
     struct fecha fecha_actual = {
@@ -1353,58 +1394,27 @@ bool validar_fecha(struct fecha *fecha_f)
         tm_info->tm_year + 1900 
     };
     
-
-    if (fecha_f->ano < 1900 || fecha_f->ano > fecha_actual.ano) 
-	{
-        printf(rojo"ERROR: El a%co debe estar entre 1900 y %d \a\n"reset, 164, fecha_actual.ano);
-        cambio = true;
-    }
-    
-
-    if (fecha_f->mes < 1 || fecha_f->mes > 12) 
-	{
-        printf(rojo"ERROR: El mes debe estar entre 1 y 12 \a\n"reset);
-        cambio = true;
-    }
-
-    if (fecha_f->mes == 2) 
-	{
-        if ((fecha_f->ano % 4 == 0 && fecha_f->ano % 100 != 0) || (fecha_f->ano % 400 == 0)) 
-		{
-            dias_por_mes[1] = 29;
-        } 
-		else 
-		{
-            dias_por_mes[1] = 28;
-        }
-    }
-    
-    if (fecha_f->dia < 1 || fecha_f->dia > dias_por_mes[fecha_f->mes - 1]) 
-	{
-        printf(rojo"ERROR: El dia %d no es valido para el mes %d del a%co %d \a\n"reset, fecha_f->dia, fecha_f->mes, 164, fecha_f->ano);
-        cambio = true;
-    }
     
     if (fecha_f->ano > fecha_actual.ano) 
-	{
+    {
         printf(rojo"ERROR: No puedes ingresar una fecha futura \a\n"reset);
         cambio = true;
     } 
-	else if (fecha_f->ano == fecha_actual.ano) 
-	{
+    else if (fecha_f->ano == fecha_actual.ano) 
+    {
         if (fecha_f->mes > fecha_actual.mes) 
-		{
+        {
             printf(rojo"ERROR: No puedes ingresar una fecha futura \a\n"reset);
             cambio = true;
         } 
-		else if (fecha_f->mes == fecha_actual.mes && fecha_f->dia > fecha_actual.dia) 
-		{
+        else if (fecha_f->mes == fecha_actual.mes && fecha_f->dia > fecha_actual.dia) 
+        {
             printf(rojo"ERROR: No puedes ingresar una fecha futura \a\n"reset);
             cambio = true;
         }
     }
     
-    return cambio; 
+    return cambio;
 }
 
 bool validar_puesto(char *puestof)
@@ -1716,7 +1726,7 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 				
 				printf("Ingrese anio: \n");
 				scanf("%d",&c->fecha_nacimiento.ano);			
-			}while(validar_fecha(&c->fecha_nacimiento));
+			}while(validar_formato_fecha(&c->fecha_nacimiento) || validar_fecha_no_futura(&c->fecha_nacimiento));
 			
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
             fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
