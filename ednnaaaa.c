@@ -114,6 +114,7 @@ bool validar_existencia_clave_servicio(int *, FILE *, bool);
 // funciones usadas para agenda
 void agenda(FILE*, FILE*, FILE*, FILE*);
 void agregar_agenda(FILE* , FILE* , FILE*, FILE* );
+void consultar_agenda(FILE* );
 void borrar_agenda(FILE*);
 bool validar_existencia_clave_agenda(int *, FILE *);
 bool validar_estatus(char *);
@@ -417,7 +418,7 @@ void agenda(FILE *Ptr_fileagenda, FILE *Ptr_filecliente, FILE *Ptr_fileempleado,
 				printf("No se abrio el archivo");
 			else
 			{
-				consultar_empleado(Ptr_fileagenda);
+				consultar_agenda(Ptr_fileagenda);
 				fclose(Ptr_fileagenda);
 			}
 			break;
@@ -1931,6 +1932,9 @@ void agregar_servicios(FILE* Ptr_Serviciosdatf)
 			scanf("%f",&servicio.precio);
 		}while(validar_precio(&servicio.precio));
 		
+		fseek(Ptr_Serviciosdatf, (servicio.clave - 1) * sizeof(struct datos_servicios), SEEK_SET);
+		fwrite(&servicio ,sizeof(struct datos_servicios), 1, Ptr_Serviciosdatf);
+		
 		do
 		{
 			printf("Desea agregar un nuevo regristro (Si/No): \n");
@@ -2011,6 +2015,51 @@ void consultar_servicio(FILE* ptrservicio)
 				{
 					printf("%-20s%-20s%-20s%-20s\n", "CLAVE", "DESCRIPCION", "DURACION DEL SERV", "PRECIO");
 					printf("%-20d%-20s%-20d%-20d%-20f",serviciof.clave,serviciof.descripcion,serviciof.duracion.hora,serviciof.duracion.minutos,serviciof.precio);
+				}
+				else
+					printf(rojo"La clave ingresada no existe\n"reset);
+				break;
+			case 2:
+				printf("Regresando al menu empleados...\n");
+				break;
+		}
+		
+	}while(opc_consulta != 2);
+}
+
+void consultar_agenda(FILE *Ptr_agenda)
+{
+	struct datos_agenda agendaf={0};
+	int opc_consulta,clave_agenda, clave_serivicio;
+	bool encontrado = true;
+
+	do
+	{
+		do
+		{
+			printf("%20s\n", "Consultar por: ");
+			printf("%-15s\n","1.-Numero de servicio");
+			printf("%-15s\n","2.-Salir");
+			scanf("%d",&opc_consulta);
+		}while(opc_consulta < 1 || opc_consulta > 2);
+		
+		switch(opc_consulta)
+		{
+			case 1:
+				do
+				{
+					fflush(stdin);
+					printf("Ingrese la clave del cliente a consultar\n");
+					scanf("%d",&clave_agenda);
+				}while(validar_clave(&clave_agenda));
+				
+				fseek(Ptr_agenda, (clave_agenda - 1) * sizeof(struct datos_agenda), SEEK_SET);
+				fread(&agendaf, sizeof(struct datos_agenda),1,Ptr_agenda);
+				
+				if(agendaf.clave == clave_agenda)
+				{
+					printf("%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", "CLAVE", "CLAVE EMPLEADO", "CLAVE CLIENTE", "CLAVE SERVICIO", "ESTATUS", "FECHA AGENDADA","HORA");
+					printf("%-20d%-20d%-20d%-20d%-20s%-2d/%-1d/%-3d%20D%",agendaf.clave, agendaf.clave_empleado,agendaf.clave_cliente, agendaf.clave_servicio, agendaf.estatus, agendaf.fecha_agendada.dia, agendaf.fecha_agendada.mes, agendaf.fecha_agendada.ano, agendaf.hora);
 				}
 				else
 					printf(rojo"La clave ingresada no existe\n"reset);
