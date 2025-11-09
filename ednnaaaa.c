@@ -188,7 +188,6 @@ bool validar_sub_menu(char fopc_sub_menu)
 	return cambio;
 }
 
-
 void clientes(FILE* Ptr_fileClient)
 {
 	char opc_sub_menu;
@@ -447,7 +446,6 @@ void agenda(FILE *Ptr_fileagenda, FILE *Ptr_filecliente, FILE *Ptr_fileempleado,
 	
 }
 
-
 bool validar_siono(char *sionof, int opcf)
 {
 	int i=0;
@@ -493,7 +491,6 @@ bool validar_clave(int *clavef)
 	return cambio;
 }
 
-
 bool validar_existencia_clave_cliente(int *clavef, FILE *ptrf, bool debe_existir)
 {
 	struct datos_clientes clientesf;
@@ -530,7 +527,6 @@ bool validar_existencia_clave_cliente(int *clavef, FILE *ptrf, bool debe_existir
     
     return cambio;
 }
-
 
 bool validar_existencia_clave_empleado(int *clavef, FILE *ptrf, bool debe_existir)
 {
@@ -945,8 +941,7 @@ void agregar_agenda(FILE* Ptr_agendadatf, FILE* Ptr_Clientesdatf, FILE* Ptr_empl
 		
 	}while(validar_siono(siono, 2));
 }
-
-
+// arreglar impresion
 void consultar_empleado(FILE* Ptr_empleadosdatf)
 {
 	struct datos_empleados empleadof={0};
@@ -983,7 +978,6 @@ void consultar_empleado(FILE* Ptr_empleadosdatf)
 				{
 					printf("%-20s%-20s%-20s%-20s%-20s%-30s\n", "CLAVE", "NOMBRE", "PUESTO","FECHA DE CONTRATACION", "TELEFONO", "CORREO");
 					printf("%-20d%-20s%-20s%-2d/%-1d/%-3d%20s%30s\n", empleadof.clave, empleadof.nombre, empleadof.puesto,  empleadof.fecha_contratacion.dia, empleadof.fecha_contratacion.mes, empleadof.fecha_contratacion.ano, empleadof.telefono, empleadof.correo);
-				
 				}
 				else
 					printf(rojo"La clave ingresada no existe\n"reset);
@@ -1048,7 +1042,6 @@ void consultar_empleado(FILE* Ptr_empleadosdatf)
 		
 	}while(opc_consulta != 4);
 }
-
 
 //importante empleados
 void modificar_empleado(FILE* Ptr_empleadosdatf)
@@ -1383,8 +1376,6 @@ bool validar_formato_fecha(struct fecha *fecha_f)
     return cambio; 
 }
 
-
-
 bool validar_fecha_no_futura(struct fecha *fecha_f) 
 {
     time_t tiempoSeg = time(NULL);
@@ -1457,7 +1448,7 @@ bool validar_estatus(char *estatusf)
     }
 	return estado;	
 }
-
+ // areglar impresion
 void consultar(FILE* Ptr_fileTxt)
 {
 	struct datos_clientes clientef={0};
@@ -1495,8 +1486,8 @@ void consultar(FILE* Ptr_fileTxt)
 				
 				if(clientef.clave == clave_ciliente)
 				{
-					printf("%-20s%-20s%-20s%-20s%-30s\n", "CLAVE", "NOMBRE", "FECHA NACIMIENTO", "TELEFONO", "CORREO");
-					printf("%-20d%-20s%-2d/%-1d/%-3d%20s%30s\n", clientef.clave, clientef.nombre, clientef.fecha_nacimiento.dia, clientef.fecha_nacimiento.mes, clientef.fecha_nacimiento.ano, clientef.telefono, clientef.correo);
+					printf("%-20s%-20s%-20s%-20s%-30s%-30s\n", "CLAVE", "NOMBRE", "FECHA NACIMIENTO", "TELEFONO", "CORREO","DIRECCION");
+					printf("%-20d%-20s%-2d/%-1d/%-3d%20s%30s%-30s%30s%30s%30s%30s\n", clientef.clave, clientef.nombre, clientef.fecha_nacimiento.dia, clientef.fecha_nacimiento.mes, clientef.fecha_nacimiento.ano, clientef.telefono, clientef.correo,clientef.direccion_cliente.calle,clientef.direccion_cliente.num_exterior,clientef.direccion_cliente.colonia,clientef.direccion_cliente.municipio,clientef.direccion_cliente.estado);
 				}
 				else
 					printf(rojo"La clave ingresada no existe\n"reset);
@@ -1517,9 +1508,8 @@ void consultar(FILE* Ptr_fileTxt)
 					
 					if(strcmp(clientef.nombre,nombre_ciliente) == 0 && !feof(Ptr_fileTxt))
 					{
-						printf("%-20s%-20s%-20s%-20s%-30s\n", "CLAVE", "NOMBRE", "FECHA NACIMIENTO", "TELEFONO", "CORREO");
-						printf("%-20d%-20s%-2d/%-1d/%-3d%20s%30s\n", clientef.clave, clientef.nombre, clientef.fecha_nacimiento.dia, clientef.fecha_nacimiento.mes, clientef.fecha_nacimiento.ano, clientef.telefono, clientef.correo);
-
+						printf("%-20s%-20s%-20s%-20s%-30s%-30s\n", "CLAVE", "NOMBRE", "FECHA NACIMIENTO", "TELEFONO", "CORREO","DIRECCION");
+						printf("%-20d%-20s%-2d/%-1d/%-3d%20s%30s%-30s%30s%30s%30s%30s\n", clientef.clave, clientef.nombre, clientef.fecha_nacimiento.dia, clientef.fecha_nacimiento.mes, clientef.fecha_nacimiento.ano, clientef.telefono, clientef.correo,clientef.direccion_cliente.calle,clientef.direccion_cliente.num_exterior,clientef.direccion_cliente.colonia,clientef.direccion_cliente.municipio,clientef.direccion_cliente.estado);
 						encontrado = false;
 					}
 						
@@ -1544,8 +1534,8 @@ void consultar(FILE* Ptr_fileTxt)
 					
 					if(strcmp(clientef.telefono,telefono_ciliente) == 0 && !feof(Ptr_fileTxt))
 					{
-						printf("%-20s%-20s%-20s%-20s%-30s\n", "CLAVE", "NOMBRE", "FECHA NACIMIENTO", "TELEFONO", "CORREO");
-						printf("%-20d%-20s%-2d/%-1d/%-3d%20s%30s\n", clientef.clave, clientef.nombre, clientef.fecha_nacimiento.dia, clientef.fecha_nacimiento.mes, clientef.fecha_nacimiento.ano, clientef.telefono, clientef.correo);
+						printf("%-20s%-20s%-20s%-20s%-30s%-30s\n", "CLAVE", "NOMBRE", "FECHA NACIMIENTO", "TELEFONO", "CORREO","DIRECCION");
+						printf("%-20d%-20s%-2d/%-1d/%-3d%20s%30s%-30s%30s%30s%30s%30s\n", clientef.clave, clientef.nombre, clientef.fecha_nacimiento.dia, clientef.fecha_nacimiento.mes, clientef.fecha_nacimiento.ano, clientef.telefono, clientef.correo,clientef.direccion_cliente.calle,clientef.direccion_cliente.num_exterior,clientef.direccion_cliente.colonia,clientef.direccion_cliente.municipio,clientef.direccion_cliente.estado);
 
 						encontrado = false;
 					}
@@ -1891,7 +1881,6 @@ void borrar_cliente(FILE*ptr_datfilef)
 		printf("Usuario no encontrado....");
 	
 }
-
 
 void agregar_servicios(FILE* Ptr_Serviciosdatf)
 {
@@ -2302,7 +2291,6 @@ void borrar_servicio(FILE* ptr_datfilef)
 	else 
 		printf("Servicio no encontrado....");
 }
-
 
 void borrar_agenda(FILE*ptr_datfilef)
 {
