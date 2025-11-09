@@ -1393,7 +1393,7 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 				gets(telefono_nuevo);
 			}while(validar_telefono(telefono_nuevo));
 			
-			strcpy(c->telefono, telefono_nuevo);
+			strcpy(c->telefono, c->telefono);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
 			fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
 			printf("Cliente modificado con exito\n");
@@ -1771,7 +1771,7 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
 				fflush(stdin);
 				printf("Ingrese la nueva descripcion del servicio\n");
 				gets(descripcion);
-			}while(validar_telefono(descripcion));
+			}while(validar_nombre(descripcion));
 			
 			strcpy(c->descripcion, descripcion);
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_servicios), SEEK_SET);
