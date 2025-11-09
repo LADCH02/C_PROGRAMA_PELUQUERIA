@@ -58,6 +58,16 @@ struct datos_servicios
 	struct tiempo duracion;
 };
 
+struct datos_agenda{
+	int clave;
+	int clave_cliente;
+	int clave_empleado;
+	char estatus[100];
+	struct fecha fecha_contratacion;
+	int hora;		
+};
+
+
 
 
 // funciones para validar
@@ -79,7 +89,7 @@ void consultar(FILE*);
 void modificar_ciliente(FILE*);
 void modificar_menu_clientes(FILE *, struct datos_clientes *c);
 void borrar_cliente(FILE*);
-bool validar_existencia_clave(int *, FILE *);
+bool validar_existencia_clave_cliente(int *, FILE *, bool);
 
 // Funciones usadas para empleados
 void empleados(FILE*);
@@ -88,7 +98,7 @@ void consultar_empleado(FILE*);
 void modificar_empleado(FILE*);
 void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c);
 void borrar_empleado(FILE*);
-bool validar_existencia_clave_empleado(int *, FILE *);
+bool validar_existencia_clave_empleado(int *, FILE *, bool);
 
 // funciones usadas para servicios
 void servicios(FILE*);
@@ -99,8 +109,14 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c);
 void borrar_servicio(FILE*);
 bool validar_existencia_clave_servicio(int *, FILE *);
 
+// funciones usadas para agenda
+void agenda(FILE*, FILE*, FILE*);
+void agregar_agenda(FILE* , FILE* , FILE* );
+bool validar_existencia_clave_agenda(int *, FILE *);
+
+
 // Espacios
-void espacios_blancos(FILE*,FILE*,FILE*);
+void espacios_blancos(FILE*,FILE*,FILE*, FILE*);
 
 
 
@@ -110,9 +126,9 @@ main()
 	
 	int opcMain;
 	char opc_sub_menu;
-	FILE *ptr_clientesdat, *ptr_empleadosdat, *ptr_serviciosdat;
+	FILE *ptr_clientesdat, *ptr_empleadosdat, *ptr_serviciosdat, *ptr_agendadat;
 	
-	espacios_blancos(ptr_clientesdat, ptr_empleadosdat, ptr_serviciosdat);
+	espacios_blancos(ptr_clientesdat, ptr_empleadosdat, ptr_serviciosdat, ptr_agendadat);
 	
 	
 	do
@@ -143,6 +159,9 @@ main()
 			case 3:
 				servicios(ptr_serviciosdat);
 				break;
+			case 4:
+				agenda(ptr_agendadat, ptr_clientesdat, ptr_empleadosdat);
+				break;
 				
 		}
 						
@@ -162,6 +181,7 @@ bool validar_sub_menu(char fopc_sub_menu)
 	}	
 	return cambio;
 }
+
 
 void clientes(FILE* Ptr_fileClient)
 {
@@ -354,6 +374,73 @@ void servicios(FILE* Ptr_fileservicio)
 	}while(opc_sub_menu != 'S' && opc_sub_menu != 's');
 }
 
+void agenda(FILE *Ptr_fileagenda, FILE *Ptr_filecliente, FILE *Ptr_fileempleado)
+{
+	char opc_sub_menu;
+	
+	do
+	{
+		do
+		{
+			printf("%20s\n", "Agenda");
+			printf("%-15s\n","A.-Agregar");
+			printf("%-15s\n","C.-Consultar");
+			printf("%-15s\n","M.-Modificar");
+			printf("%-15s\n","D.-Borrar");
+			printf("%-15s\n","S.-Salir");
+			fflush(stdin);
+			scanf("%c", &opc_sub_menu);
+		}while((validar_sub_menu(opc_sub_menu)));
+		
+		switch (opc_sub_menu)
+		{
+			case 'a' : case 'A':
+			if((Ptr_fileagenda = fopen("agenda.dat","r+")) == NULL || (Ptr_filecliente = fopen("clientes1.dat","r+")) == NULL || (Ptr_fileempleado = fopen("empleados.dat","r+")) == NULL)
+				printf("No se abrio el archivo");
+			else
+			{
+				agregar_agenda(Ptr_fileagenda, Ptr_filecliente,Ptr_fileempleado);
+				fclose(Ptr_fileagenda);
+				fclose(Ptr_filecliente);
+				fclose(Ptr_fileempleado);
+			}
+			break;	
+			
+			case 'c' : case'C': 
+			if((Ptr_fileagenda = fopen("agenda.dat","r+")) == NULL )
+				printf("No se abrio el archivo");
+			else
+			{
+				consultar_empleado(Ptr_fileagenda);
+				fclose(Ptr_fileagenda);
+			}
+			break;
+			
+			case 'm' : case'M': 
+			if((Ptr_fileagenda = fopen("agenda.dat","r+")) == NULL)
+				printf("No se abrio el archivo");
+			else
+			{
+				modificar_empleado(Ptr_fileagenda);
+				fclose(Ptr_fileagenda);
+			}
+			break;	
+			
+			case 'd': case'D':
+			if((Ptr_fileagenda = fopen("agenda.dat","r+")) == NULL)
+				printf("No se abrio el archivo");
+			else
+			{
+				borrar_empleado(Ptr_fileagenda);
+				fclose(Ptr_fileagenda);
+			}
+					
+		}
+	}while(opc_sub_menu != 'S' && opc_sub_menu != 's');
+	
+}
+
+
 bool validar_siono(char *sionof, int opcf)
 {
 	int i=0;
@@ -399,40 +486,80 @@ bool validar_clave(int *clavef)
 	return cambio;
 }
 
-bool validar_existencia_clave(int *clavef, FILE *ptrf)
+
+bool validar_existencia_clave_cliente(int *clavef, FILE *ptrf, bool debe_existir)
 {
 	struct datos_clientes clientesf;
-	bool	cambio = false;
-	while(!feof(ptrf))
+    bool cambio = false;
+    bool encontrado = false;
+    
+    while(!feof(ptrf))
+    {
+        fread(&clientesf, sizeof(struct datos_clientes), 1, ptrf);    
+        if(*clavef == clientesf.clave)
+        {
+            encontrado = true;
+            break;
+        }
+    }
+    rewind(ptrf);
+    
+    if(debe_existir) 
 	{
-		fread(&clientesf, sizeof(struct datos_clientes), 1, ptrf);	
-		if(*clavef == clientesf.clave)
+        if(!encontrado) 
 		{
-			printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
-			cambio = true;
-		}
-	}
-	rewind(ptrf);
-	
-	return cambio;
+            printf(rojo"ERROR: La clave de cliente no existe \a\n"reset);
+            cambio = true;
+        }
+    } 
+	else 
+	{
+        if(encontrado) 
+		{
+            printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
+            cambio = true;
+        }
+    }
+    
+    return cambio;
 }
 
-bool validar_existencia_clave_empleado(int *clavef, FILE *ptrf)
+
+bool validar_existencia_clave_empleado(int *clavef, FILE *ptrf, bool debe_existir)
 {
-	struct datos_empleados empleadof;
-	bool	cambio = false;
-	while(!feof(ptrf))
+    struct datos_empleados empleadof;
+    bool cambio = false;
+    bool encontrado = false;
+    
+    while(!feof(ptrf))
+    {
+        fread(&empleadof, sizeof(struct datos_empleados), 1, ptrf);    
+        if(*clavef == empleadof.clave)
+        {
+            encontrado = true;
+            break;
+        }
+    }
+    rewind(ptrf);
+    
+    if(debe_existir) 
 	{
-		fread(&empleadof, sizeof(struct datos_empleados), 1, ptrf);	
-		if(*clavef == empleadof.clave)
+        if(!encontrado) 
 		{
-			printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
-			cambio = true;
-		}
-	}
-	rewind(ptrf);
-	
-	return cambio;
+            printf(rojo"ERROR: La clave de empleado no existe \a\n"reset);
+            cambio = true;
+        }
+    } 
+	else 
+	{
+        if(encontrado) 
+		{
+            printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
+            cambio = true;
+        }
+    }
+    
+    return cambio;
 }
 
 bool validar_existencia_clave_servicio(int *clavef, FILE *ptrf)
@@ -450,6 +577,24 @@ bool validar_existencia_clave_servicio(int *clavef, FILE *ptrf)
 		}
 	}
 	rewind(ptrf);
+	
+	return cambio;
+}
+
+bool validar_existencia_clave_agenda(int *clave_agendaf, FILE *Ptr_agendadatf)
+{
+	struct datos_agenda agendaf;
+	bool	cambio = false;
+	while(!feof(Ptr_agendadatf))
+	{
+		fread(&agendaf, sizeof(struct datos_agenda), 1, Ptr_agendadatf);	
+		if(*clave_agendaf == agendaf.clave && !feof(Ptr_agendadatf))
+		{
+			printf(rojo"ERROR: Ingresa una clave que no este asignada \a\n"reset);
+			cambio = true;
+		}
+	}
+	rewind(Ptr_agendadatf);
 	
 	return cambio;
 }
@@ -498,16 +643,17 @@ bool validar_nombre(char *nombref)
 void agregar_cliente(FILE* Ptr_Clientesdatf )
 {
 	struct datos_clientes cliente;
+	int resultado_scanf;
 	char siono[3];
 	
 	do
 	{
 		do
 		{
-			printf("Ingresa la clave del cliente: \n");
 			fflush(stdin);
-			scanf("%d", &cliente.clave);
-		}while(validar_clave(&cliente.clave) || validar_existencia_clave(&cliente.clave, Ptr_Clientesdatf));
+			printf("Ingresa la clave del cliente: \n");
+			resultado_scanf = scanf("%d", &cliente.clave);
+		}while(validar_clave(&cliente.clave) || validar_existencia_clave_cliente(&cliente.clave, Ptr_Clientesdatf, false));
 		
 		do
 		{
@@ -605,10 +751,10 @@ void agregar_empleado(FILE* Ptr_empleadosdatf)
 	{
 		do
 		{
-			printf("Ingresa la clave del empleado: \n");
 			fflush(stdin);
+			printf("Ingresa la clave del empleado: \n");
 			scanf("%d", &empleado.clave);
-		}while(validar_clave(&empleado.clave) || validar_existencia_clave_empleado(&empleado.clave, Ptr_empleadosdatf));
+		}while(validar_clave(&empleado.clave) || validar_existencia_clave_empleado(&empleado.clave, Ptr_empleadosdatf, false));
 		
 		do
 		{
@@ -703,6 +849,71 @@ void agregar_empleado(FILE* Ptr_empleadosdatf)
 		
 	}while(validar_siono(siono, 2));
 }
+
+void agregar_agenda(FILE* Ptr_agendadatf, FILE* Ptr_Clientesdatf, FILE* Ptr_empleadosdatf)
+{
+	struct datos_agenda agenda;
+	char siono[3];
+	
+	do
+	{
+		do
+		{
+			fflush(stdin);
+			printf("Ingresa el numero de agenda: \n");
+			scanf("%d", &agenda.clave);
+		}while(validar_clave(&agenda.clave) || validar_existencia_clave_agenda(&agenda.clave, Ptr_agendadatf));
+		
+		do
+		{
+			fflush(stdin);
+			printf("Ingresa la clave del empleado: \n");
+			scanf("%d", &agenda.clave_empleado);
+		}while(validar_clave(&agenda.clave_empleado) || validar_existencia_clave_empleado(&agenda.clave_empleado, Ptr_empleadosdatf, true));
+		
+		do
+		{
+			fflush(stdin);
+			printf("Ingresa la clave del cliente: \n");
+			scanf("%d", &agenda.clave_cliente);
+		}while(validar_clave(&agenda.clave_cliente) || validar_existencia_clave_cliente(&agenda.clave_cliente, Ptr_Clientesdatf, true));
+		
+		do
+		{
+			printf("Ingresa el estatus: \n");
+			fflush(stdin);
+			gets(agenda.estatus);
+		}while(validar_nombre(agenda.estatus));
+		
+		
+		do
+		{
+			fflush(stdin);
+			printf("--- Fecha de contratacion ---\n");
+			printf("Ingrese dia: \n");
+			scanf("%d",&agenda.fecha_contratacion.dia);
+			
+			printf("Ingrese mes: \n");
+			scanf("%d",&agenda.fecha_contratacion.mes);
+			
+			printf("Ingrese anio: \n");
+			scanf("%d",&agenda.fecha_contratacion.ano);			
+		}while(validar_fecha(&agenda.fecha_contratacion));
+				
+		
+		fseek(Ptr_agendadatf, (agenda.clave - 1) * sizeof(struct datos_agenda), SEEK_SET);
+		fwrite(&agenda, sizeof(struct datos_agenda), 1, Ptr_agendadatf);
+			
+		do
+		{
+			printf("Desea agregar un nuevo regristro (Si/No): ");
+			fflush(stdin);
+			gets(siono);	
+		}while(validar_siono(siono, 1));
+		
+	}while(validar_siono(siono, 2));
+}
+
 
 void consultar_empleado(FILE* Ptr_empleadosdatf)
 {
@@ -1522,7 +1733,7 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 
 // hasta aqui
 
-void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_ServiciosdatF)
+void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_ServiciosdatF, FILE*ptr_agendadatF)
 {	
 	struct fecha fecha_blanco = {0,0,0};
 	struct tiempo tiempo_blanco = {0,0};
@@ -1530,6 +1741,8 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 	struct datos_clientes cliente_blanco={0," ",fecha_blanco," "," ", direccion_blanco};
 	struct datos_empleados empleados_blanco={0," "," ",fecha_blanco," "," ",direccion_blanco};
 	struct datos_servicios servicios_blanco={0," ",0.0,tiempo_blanco};
+	struct datos_agenda agenda_blanco = {0,0,0," ",fecha_blanco,0};
+
 
 
 	int i;
@@ -1555,7 +1768,7 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 		Ptr_EmpleadosdatF = fopen("empleados.dat","w");
 		
 		for(i=0; i<100; i++)
-			fwrite(&empleados_blanco, sizeof(struct datos_clientes), 1, Ptr_EmpleadosdatF);
+			fwrite(&empleados_blanco, sizeof(struct datos_empleados), 1, Ptr_EmpleadosdatF);
 		
 		fclose(Ptr_EmpleadosdatF);
 	}
@@ -1575,6 +1788,19 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 	}
 	else
 		printf("archivo servicios encontrado\n");
+		
+	if((ptr_agendadatF = fopen("agenda.dat","r+"))== NULL) 
+	{
+		printf("No se encontro archivo agenda....creando archivo agenda\n");
+		ptr_agendadatF = fopen("agenda.dat","w");
+		
+		for(i=0; i<100; i++)
+			fwrite(&agenda_blanco, sizeof(struct datos_agenda), 1, ptr_agendadatF);
+		
+		fclose(ptr_agendadatF);
+	}
+	else
+		printf("archivo empleados encontrado\n");
 		
 }
 
