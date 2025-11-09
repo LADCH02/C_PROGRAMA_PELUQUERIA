@@ -89,9 +89,9 @@ bool validar_existencia_clave_empleado(int *, FILE *);
 // funciones usadas para servicios
 void servicios(FILE*);
 void agregar_servicios(FILE*);
-void consultar_servicios(FILE*);
-void modificar_servicios(FILE*);
-void borrar_servicios(FILE*);
+void consultar_servicio(FILE*);
+void modificar_servicio(FILE*);
+void borrar_servicio(FILE*);
 bool validar_existencia_clave_servicio(int *, FILE *);
 
 // Espacios
@@ -724,7 +724,7 @@ void consultar_empleado(FILE* Ptr_empleadosdatf)
 				do
 				{
 					fflush(stdin);
-					printf("Ingrese la clave del cliente a consultar\n");
+					printf("Ingrese la clave del empleado a consultar\n");
 					scanf("%d",&clave_buscar);
 				}while(validar_clave(&clave_buscar));
 				
@@ -801,6 +801,8 @@ void consultar_empleado(FILE* Ptr_empleadosdatf)
 	}while(opc_consulta != 4);
 }
 
+
+//importante empleados
 void modificar_empleado(FILE* Ptr_empleadosdatf)
 {
 	struct datos_empleados empleadof={0};
@@ -894,6 +896,8 @@ void modificar_empleado(FILE* Ptr_empleadosdatf)
 	
 }
 
+
+//falta una funcion
 void borrar_empleado(FILE*ptr_datfilef)
 {
 	struct fecha fecha_blanco = {0,0,0};
@@ -1148,6 +1152,7 @@ void consultar(FILE* Ptr_fileTxt)
 	}while(opc_consulta != 4);
 }
 
+//importante clientes
 void modificar_ciliente(FILE* Ptr_fileTxt)
 {
 	struct datos_clientes clientef;
@@ -1359,6 +1364,8 @@ void modificar_menu(FILE *Ptr_fileTxt, struct datos_clientes *c )
 	}
 }
 
+// hasta aqui
+
 void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_ServiciosdatF)
 {	
 	struct fecha fecha_blanco = {0,0,0};
@@ -1530,16 +1537,162 @@ bool validar_precio(float *preciof)
     return salir; 
 }
 
-void consultar_servicios(FILE* ptrservicio)
+void consultar_servicio(FILE* ptrservicio)
 {
-	
+	struct datos_servicios serviciof={0};
+	int opc_consulta,clave_servicio;
+	bool encontrado = true;
+
+	do
+	{
+		do
+		{
+			printf("%20s\n", "Consultar por: ");
+			printf("%-15s\n","1.-Clave");
+			printf("%-15s\n","2.-Salir");
+			scanf("%d",&opc_consulta);
+		}while(opc_consulta < 1 || opc_consulta > 2);
+		
+		switch(opc_consulta)
+		{
+			case 1:
+				do
+				{
+					fflush(stdin);
+					printf("Ingrese la clave del cliente a consultar\n");
+					scanf("%d",&clave_servicio);
+				}while(validar_clave(&clave_servicio));
+				
+				fseek(ptrservicio, (clave_servicio - 1) * sizeof(struct datos_servicios), SEEK_SET);
+				fread(&serviciof, sizeof(struct datos_servicios),1,ptrservicio);
+				
+				if(serviciof.clave == clave_servicio)
+				{
+					printf("%-20s%-20s%-20s%-20s\n", "CLAVE", "DESCRIPCION", "DURACION DEL SERV", "PRECIO");
+					printf("%-20d%-20s%-20d%-20d%-20f",serviciof.clave,serviciof.descripcion,serviciof.duracion.hora,serviciof.duracion.minutos,serviciof.precio);
+				}
+				else
+					printf(rojo"La clave ingresada no existe\n"reset);
+				break;
+			case 2:
+				printf("Regresando al menu empleados...\n");
+				break;
+		}
+		
+	}while(opc_consulta != 2);
 }
 
-void modificar_servicios(FILE* ptrservicio)
+// importante servicios
+void modificar_servicio(FILE* ptrservicio)
 {
-	
+	struct datos_servicios serviciof;
+	int opc_consulta,clave_servicio;
+	bool encontrado = true;
+
+	do
+	{
+		do
+		{
+			printf("%20s\n", "Modificar cliente por: ");
+			printf("%-15s\n","1.-Clave");
+			printf("%-15s\n","2.-Salir");
+			scanf("%d",&opc_consulta);
+		}while(opc_consulta < 1 || opc_consulta > 2);
+		
+		switch(opc_consulta)
+		{
+			case 1:
+				do
+				{
+					printf("Ingrese la clave del ciliente a modificar\n");
+					scanf("%d",&clave_servicio);
+				}while(validar_clave(&clave_servicio));
+				
+				fseek(ptrservicio, (clave_servicio - 1) * sizeof(struct datos_servicios), SEEK_SET);
+				fread(&serviciof, sizeof(struct datos_servicios),1,ptrservicio);
+				
+				if(serviciof.clave == clave_servicio)
+				{
+					modificar_menu(ptrservicio, &serviciof);
+				}
+				else
+					printf(rojo"La clave ingresada no existe\n"reset);
+				break;
+			case 2:
+				printf("Gracias por usar el programa\n");
+				break;
+		}
+		
+	}while(opc_consulta != 2);
 }
-void borrar_servicios(FILE* ptrservicio)
+
+void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
+{
+	int opc_consulta,hora,minutos;
+	char descripcion[100];
+	float precio;
+	do
+	{
+		printf("%20s\n", "Que desea modificar del cliente: ");
+		printf("%-15s\n","1.-Descripcion");
+		printf("%-15s\n","2.-Precio");
+		printf("%-15s\n","3.-Tiempo de duracion");
+		printf("%-15s\n","4.-Salir");
+		scanf("%d",&opc_consulta);
+	}while(opc_consulta < 1 || opc_consulta > 4);
+	
+	switch(opc_consulta)
+	{
+		case 1:
+			do
+			{
+				fflush(stdin);
+				printf("Ingrese la nueva descripcion del servicio\n");
+				gets(descripcion);
+			}while(validar_telefono(descripcion));
+			
+			strcpy(c->descripcion, descripcion);
+			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_servicios), SEEK_SET);
+			fwrite(c, sizeof(struct datos_servicios),1,Ptr_fileTxt);
+			printf("Servicio modificado con exito\n");
+			break;
+			
+		case 2:
+			do
+			{
+				fflush(stdin);
+				printf("Ingrese el nuevo precio del servicio\n");
+				scanf("%f",&precio);
+			}while(validar_precio(precio));
+			
+			c->precio = precio);
+			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_servicios), SEEK_SET);
+			fwrite(c, sizeof(struct datos_servicios),1,Ptr_fileTxt);
+			printf("Cliente modificado con exito\n");			
+			break;
+			
+		case 3:
+			do
+			{
+				fflush(stdin);
+				printf("--- Ingrese la nueva duracion del servicio ---\n");
+				printf("Ingrese hora: \n");
+				scanf("%d",&c->duracion.hora);
+				printf("Ingrese minutos: \n");
+				scanf("%d",&c->duracion.minutos);
+			}while(validar_duracion(c->duracion));
+			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
+			fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
+			printf("servicios modificado con exito\n");
+			break;				
+		case 4:
+			printf("Regresando al menu modificar servicios....\n");
+			break;
+	}
+}
+
+// falta una funcion
+void borrar_servicio(FILE* ptrservicio)
 {
 	
 }
