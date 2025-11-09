@@ -7,7 +7,8 @@
 #define rojo "\033[0;31m"
 #define reset "\033[0m"
 
-struct datos_direcciones{
+struct datos_direcciones
+{
 	char calle[100];
 	int num_exterior;
 	char colonia[100];
@@ -15,7 +16,8 @@ struct datos_direcciones{
 	char estado[100];		
 };
 
-struct fecha{
+struct fecha
+{
 	int dia;
 	int mes;
 	int ano;		
@@ -1692,7 +1694,28 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
 }
 
 // falta una funcion
-void borrar_servicio(FILE* ptrservicio)
+void borrar_servicio(FILE* ptr_datfilef)
 {
+	struct  tiempo = {0,0};
+	struct datos_servicios servicio_blanco={0," ",0.0,tiempo_blanco}, serviciof;
+	int del_clave;
 	
+	do
+	{
+		fflush(stdin);
+		printf("ingrese la clave del servicio a eliminar: \n");
+		scanf("%d",&del_clave);
+	}while(validar_clave(&del_clave));
+	
+	fseek(ptr_datfilef, (del_clave-1)*sizeof(struct datos_servicios),SEEK_SET);
+	fread(&serviciof, sizeof(struct datos_servicios),1,ptr_datfilef);
+	
+	if(serviciof.clave == del_clave)
+	{
+		fseek(ptr_datfilef, (del_clave-1)*sizeof(struct datos_servicios),SEEK_SET);
+		fwrite(&servicio_blanco, sizeof(struct datos_servicios),1,ptr_datfilef);
+		printf("Servicio eliminado con exito...");	
+	}
+	else 
+		printf("Servicio no encontrado....");
 }
