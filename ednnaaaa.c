@@ -69,8 +69,6 @@ struct datos_agenda{
 };
 
 
-
-// funciones para validar
 bool validar_sub_menu(char );
 bool validar_siono(char *, int);
 bool validar_clave(int *);
@@ -84,8 +82,6 @@ bool validar_duracion(struct tiempo *);
 bool validar_precio(float *);
 bool validar_correo(char *);
 
-
-// funciones usadas para clientes
 void clientes(FILE*);
 void agregar_cliente(FILE*);
 void consultar(FILE*);
@@ -94,7 +90,6 @@ void modificar_menu_clientes(FILE *, struct datos_clientes *c);
 void borrar_cliente(FILE*);
 bool validar_existencia_clave_cliente(int *, FILE *, bool);
 
-// Funciones usadas para empleados
 void empleados(FILE*);
 void agregar_empleado(FILE*);
 void consultar_empleado(FILE*);
@@ -103,7 +98,6 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c);
 void borrar_empleado(FILE*);
 bool validar_existencia_clave_empleado(int *, FILE *, bool);
 
-// funciones usadas para servicios
 void servicios(FILE*);
 void agregar_servicios(FILE*);
 void consultar_servicio(FILE*);
@@ -112,7 +106,6 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c);
 void borrar_servicio(FILE*);
 bool validar_existencia_clave_servicio(int *, FILE *, bool);
 
-// funciones usadas para agenda
 void agenda(FILE*, FILE*, FILE*, FILE*);
 void agregar_agenda(FILE* , FILE* , FILE*, FILE* );
 void consultar_agenda(FILE* );
@@ -123,16 +116,10 @@ bool validar_estatus(char *);
 void modificar_menu_agenda(FILE *, FILE *, FILE *, FILE *, struct datos_agenda *);
 bool validar_hora(int *);
 
-
-//funciones para reportes
 void reportes(FILE*,FILE*,FILE*,FILE*, FILE*);
-void validar_sub_menu_reportes(char );
+bool validar_sub_menu_reportes(char );
 
-// Espacios
 void espacios_blancos(FILE*,FILE*,FILE*, FILE*);
-
-
-
 
 main()
 {
@@ -180,7 +167,7 @@ main()
 				break;
 			case 6: 
 				printf("GRACIAS POR USAR EL PROGRAMA (PIA)");
-				break
+				break;
 				
 		}
 						
@@ -579,8 +566,8 @@ bool validar_correo(char *cadena)
     int posicionArroba = -1;
     bool error = false;
 
-    // Validar longitud mínima
-    if(longitudCadena < 5) // a@b.c
+    
+    if(longitudCadena < 5) 
     {
         printf(rojo"ERROR: El correo es demasiado corto \a\n"reset);
         error = true;
@@ -588,7 +575,7 @@ bool validar_correo(char *cadena)
 
     if(!error)
     {
-        // Buscar '@' y verificar posición
+        
         while(i < longitudCadena && !hayArroba)
         {
             if(cadena[i] == '@')
@@ -599,7 +586,7 @@ bool validar_correo(char *cadena)
             i++;
         }
 
-        // Debe haber '@' y no puede estar al inicio o final
+    
         if(!hayArroba)
         {
             printf(rojo"ERROR: El correo debe contener el símbolo @ \a\n"reset);
@@ -619,13 +606,11 @@ bool validar_correo(char *cadena)
 
     if(!error)
     {
-        // Buscar punto después del '@'
         i = posicionArroba + 1;
         while(i < longitudCadena && !hayPuntoDespuesArroba)
         {
             if(cadena[i] == '.')
             {
-                // Verificar que haya al menos un carácter antes y después del punto
                 if(i > posicionArroba + 1 && i < longitudCadena - 1)
                 {
                     hayPuntoDespuesArroba = true;
@@ -641,7 +626,7 @@ bool validar_correo(char *cadena)
         }
     }
 
-    return error; // true = hay error, false = correo válido
+    return error; 
 }
 
 bool validar_nombre(char *nombref)
@@ -895,7 +880,6 @@ void agregar_empleado(FILE* Ptr_empleadosdatf)
 	}while(validar_siono(siono, 2));
 }
 
-// arreglar impresion
 void consultar_empleado(FILE* Ptr_empleadosdatf)
 {
 	struct datos_empleados empleadof={0};
@@ -1040,7 +1024,7 @@ void consultar_empleado(FILE* Ptr_empleadosdatf)
 	}while(opc_consulta != 4);
 }
 
-//importante empleados
+
 void modificar_empleado(FILE* Ptr_empleadosdatf)
 {
 	struct datos_empleados empleadof;
@@ -1246,7 +1230,6 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 	printf("Empleado modificado con exito\n");
 }
 
-//falta una funcion
 void borrar_empleado(FILE*ptr_datfilef)
 {
 	struct fecha fecha_blanco = {0,0,0};
@@ -1422,7 +1405,7 @@ bool validar_estatus(char *estatusf)
     }
 	return estado;	
 }
- // areglar impresion
+
 void consultar(FILE* Ptr_fileTxt)
 {
 	struct datos_clientes clientef={0};
@@ -1566,7 +1549,7 @@ void consultar(FILE* Ptr_fileTxt)
 	}while(opc_consulta != 4);
 }
 
-//importante clientes
+
 void modificar_ciliente(FILE* Ptr_fileTxt)
 {
 	struct datos_clientes clientef;
@@ -1795,8 +1778,6 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 	}
 }
 
-// hasta aqui
-
 void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_ServiciosdatF, FILE*ptr_agendadatF)
 {	
 	struct fecha fecha_blanco = {0,0,0};
@@ -1811,7 +1792,7 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 
 	int i;
 	
-	//erchivo binario clientes
+	
 	if((Ptr_ClientesdatF = fopen("clientes1.dat","r+"))== NULL) 
 	{
 		printf("No se encontro archivo clientes....creando archivo clientes\n");
@@ -1825,7 +1806,7 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 	else
 		printf("archivo clientes encontrado\n");
 	
-	//archivo binario empleados
+	
 	if((Ptr_EmpleadosdatF = fopen("empleados.dat","r+"))== NULL) 
 	{
 		printf("No se encontro archivo empleados....creando archivo empleados\n");
@@ -1839,7 +1820,7 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 	else
 		printf("archivo empleados encontrado\n");
 		
-	//archivo binario servicios
+	
 	if((Ptr_ServiciosdatF = fopen("servicios.dat","r+"))== NULL) 
 	{
 		printf("No se encontro archivo servicios....creando archivo servicios\n");
@@ -2030,7 +2011,7 @@ void consultar_servicio(FILE* ptrservicio)
 	}while(opc_consulta != 2);
 }
 
-// importante servicios
+
 void modificar_servicio(FILE* ptrservicio)
 {
 	struct datos_servicios serviciof;
@@ -2137,7 +2118,7 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
 	}
 }
 
-// falta una funcion
+
 void borrar_servicio(FILE* ptr_datfilef)
 {
 	struct tiempo tiempo_blanco = {0,0};
@@ -2669,7 +2650,7 @@ void reportes(FILE*ptr_agendaf,FILE*ptr_clientesf,FILE*ptr_empleadosf, FILE*ptr_
 				printf(rojo"ERROR ingrese un valor correcto\a\n"reset);	
 		}while(validar_sub_menu_reportes(opcRep));
 		
-		switch (opcMain)
+		switch (opcRep)
 		{
 			case 'a':			
 			
