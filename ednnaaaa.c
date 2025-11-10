@@ -2672,7 +2672,7 @@ void reportes(FILE*ptr_agendaf,FILE*ptr_clientesf,FILE*ptr_empleadosf, FILE*ptr_
 		switch (opcMain)
 		{
 			case 'a':			
-		
+			
 			case 'b':
 			
 			case 'c':
