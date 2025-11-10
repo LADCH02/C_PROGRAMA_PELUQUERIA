@@ -2297,7 +2297,7 @@ void agregar_agenda(FILE* Ptr_agendadatf, FILE* Ptr_Clientesdatf, FILE* Ptr_empl
 		do
 		{
 			fflush(stdin);
-			printf("--- Fecha de contratacion ---\n");
+			printf("--- Fecha de cita ---\n");
 			printf("Ingrese dia: \n");
 			scanf("%d",&agenda.fecha_agendada.dia);
 			
