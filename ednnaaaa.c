@@ -1006,13 +1006,14 @@ void modificar_empleado(FILE* Ptr_empleadosdatf)
 				}while(validar_nombre(nombre_buscar));
 				
 				rewind(Ptr_empleadosdatf);
-				fread(&empleadof, sizeof(struct datos_empleados),1,Ptr_empleadosdatf);
+				
 				
 				while(!feof(Ptr_empleadosdatf))
 				{
+					fread(&empleadof, sizeof(struct datos_empleados),1,Ptr_empleadosdatf);
 					if(strcmp(empleadof.nombre,nombre_buscar))
 					{
-					
+						modificar_menu_empleado(Ptr_empleadosdatf,&empleadof);
 						encontrado = false;
 					}
 				}
@@ -1033,9 +1034,10 @@ void modificar_empleado(FILE* Ptr_empleadosdatf)
 				
 				while(!feof(Ptr_empleadosdatf))
 				{
+					fread(&empleadof, sizeof(struct datos_empleados),1,Ptr_empleadosdatf);
 					if(strcmp(empleadof.telefono,telefono_buscar))
 					{
-						
+						modificar_menu_empleado(Ptr_empleadosdatf,&empleadof);
 						encontrado = false;
 					}
 				}
