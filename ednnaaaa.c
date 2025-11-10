@@ -70,7 +70,6 @@ struct datos_agenda{
 
 
 
-
 // funciones para validar
 bool validar_sub_menu(char );
 bool validar_siono(char *, int);
@@ -125,6 +124,10 @@ void modificar_menu_agenda(FILE *, FILE *, FILE *, FILE *, struct datos_agenda *
 bool validar_hora(int *);
 
 
+//funciones para reportes
+void reportes(FILE*,FILE*,FILE*,FILE*, FILE*);
+void validar_sub_menu_reportes(char );
+
 // Espacios
 void espacios_blancos(FILE*,FILE*,FILE*, FILE*);
 
@@ -136,7 +139,7 @@ main()
 	
 	int opcMain;
 	char opc_sub_menu;
-	FILE *ptr_clientesdat, *ptr_empleadosdat, *ptr_serviciosdat, *ptr_agendadat;
+	FILE *ptr_clientesdat, *ptr_empleadosdat, *ptr_serviciosdat, *ptr_agendadat, *ptr_reportes;
 	
 	espacios_blancos(ptr_clientesdat, ptr_empleadosdat, ptr_serviciosdat, ptr_agendadat);
 	
@@ -172,6 +175,12 @@ main()
 			case 4:
 				agenda(ptr_agendadat, ptr_clientesdat, ptr_empleadosdat,  ptr_serviciosdat);
 				break;
+			case 5:
+				reportes(ptr_agendadat, ptr_clientesdat, ptr_empleadosdat,  ptr_serviciosdat, ptr_reportes);
+				break;
+			case 6: 
+				printf("GRACIAS POR USAR EL PROGRAMA (PIA)");
+				break
 				
 		}
 						
@@ -2634,4 +2643,54 @@ void borrar_agenda(FILE*ptr_datfilef)
 	else 
 		printf("Usuario no encontrado....");
 	
+}
+
+
+void reportes(FILE*ptr_agendaf,FILE*ptr_clientesf,FILE*ptr_empleadosf, FILE*ptr_serviciosf, FILE*ptr_reportesf)
+{
+	char opcRep;
+		
+	do
+	{
+		do
+		{
+			printf("%20s\n", "REPORTE");
+			printf("%-15s\n","a.-Listado de empelados por puesto");
+			printf("%-15s\n","b.-Listado de listas por estatus");
+			printf("%-15s\n","c.-Listado de lista por fecha");
+			printf("%-15s\n","d.-Venta por fecha");
+			printf("%-15s\n","e.-Generar archivo de clientes");
+			printf("%-15s\n","f.-Generar archivo de empleados");
+			printf("%-15s\n","g.-Mostrar archivoo");
+			printf("%-15s\n","h.-Salir");
+			scanf("%d", &opcRep);
+			fflush(stdin);
+			if(validar_sub_menu_reportes(opcRep))
+				printf(rojo"ERROR ingrese un valor correcto\a\n"reset);	
+		}while(validar_sub_menu_reportes(opcRep));
+		
+		switch (opcMain)
+		{
+			case 'a':			
+			
+			case 'b':
+			
+			case 'c':
+			
+			case 'd':
+			
+		}
+						
+	}while(opcRep != 'h');
+}
+
+bool validar_sub_menu_reportes(char fopc_sub_menu)
+{
+	bool cambio = false;
+	if(fopc_sub_menu < 'a' || fopc_sub_menu > 'h')
+	{	
+		cambio = true;
+		printf(rojo"ERROR ingrese clave correcta \a\n"reset);
+	}	
+	return cambio;
 }
