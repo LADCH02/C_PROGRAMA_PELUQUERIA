@@ -128,13 +128,13 @@ void reportes(FILE*,FILE*,FILE*,FILE*, FILE*);
 bool validar_sub_menu_reportes(char);
 
 // sub-funciones por cada opción del menú de reportes
-void reporte_empleados_por_puesto(void);          // a
-void reporte_listas_por_estatus(void);            // b
-void reporte_listas_por_fecha(void);              // c
-void reporte_venta_por_fecha(void);               // d
-void reporte_generar_archivo_clientes(void);      // e
-void reporte_generar_archivo_empleados(void);     // f
-void reporte_mostrar_archivo(void);               // g
+void reporte_empleados_por_puesto(FILE *,FILE *);          // a
+void reporte_listas_por_estatus(FILE *,FILE *);            // b
+void reporte_listas_por_fecha(FILE *,FILE *);              // c
+void reporte_venta_por_fecha(FILE *,FILE *,FILE *);               // d
+void reporte_generar_archivo_clientes(FILE *,FILE *);      // e
+void reporte_generar_archivo_empleados(FILE *,FILE *);     // f
+void reporte_mostrar_archivo(FILE *);               // g
 
 //funciones para reportes
 void reportes(FILE*,FILE*,FILE*,FILE*, FILE*);
@@ -2682,31 +2682,31 @@ void reportes(FILE*ptr_agendaf,FILE*ptr_clientesf,FILE*ptr_empleadosf, FILE*ptr_
         switch(opcRep)
         {
             case 'a': case 'A':
-                reporte_empleados_por_puesto();
+                reporte_empleados_por_puesto(ptr_empleadosf,ptr_reportesf);
                 break;
 
             case 'b': case 'B':
-                reporte_listas_por_estatus();
+                reporte_listas_por_estatus(ptr_agendaf,ptr_reportesf);
                 break;
 
             case 'c': case 'C':
-                reporte_listas_por_fecha();
+                reporte_listas_por_fecha(ptr_agendaf,ptr_reportesf);
                 break;
 
             case 'd': case 'D':
-                reporte_venta_por_fecha();
+                reporte_venta_por_fecha(ptr_agendaf,ptr_serviciosf,ptr_reportesf);
                 break;
 
             case 'e': case 'E':
-                reporte_generar_archivo_clientes();
+                reporte_generar_archivo_clientes(ptr_clientesf,ptr_reportesf);
                 break;
 
             case 'f': case 'F':
-                reporte_generar_archivo_empleados();
+                reporte_generar_archivo_empleados(ptr_empleadosf,ptr_reportesf);
                 break;
 
             case 'g': case 'G':
-                reporte_mostrar_archivo();
+                reporte_mostrar_archivo(ptr_reportesf);
                 break;
 
             case 'h': case 'H':
@@ -2737,9 +2737,8 @@ bool validar_sub_menu_reportes(char fopc_sub_menu)
     return cambio;
 }
 
-void reporte_empleados_por_puesto(void)
+void reporte_empleados_por_puesto( FILE *ptr_empleadosf, FILE *ptr_reportesf)
 {
-    FILE *ptr_empleadosf, *ptr_reportesf;
     struct datos_empleados empleado;
     char puesto[100];
 
@@ -2791,9 +2790,8 @@ void reporte_empleados_por_puesto(void)
     printf("Reporte generado: reporte_empleados_puesto.txt\n");
 }
 
-void reporte_listas_por_estatus(void)
+void reporte_listas_por_estatus(FILE *ptr_agendaf, FILE *ptr_reportesf)
 {
-    FILE *ptr_agendaf, *ptr_reportesf;
     struct datos_agenda ag;
     char estatus[100];
 
@@ -2840,9 +2838,8 @@ void reporte_listas_por_estatus(void)
     printf("Reporte generado: reporte_listas_estatus.txt\n");
 }
 
-void reporte_listas_por_fecha(void)
+void reporte_listas_por_fecha(FILE *ptr_agendaf, FILE *ptr_reportesf)
 {
-    FILE *ptr_agendaf, *ptr_reportesf;
     struct datos_agenda ag;
     struct fecha f;
 
@@ -2899,9 +2896,8 @@ void reporte_listas_por_fecha(void)
     printf("Reporte generado: reporte_listas_fecha.txt\n");
 }
 
-void reporte_venta_por_fecha(void)
+void reporte_venta_por_fecha(FILE *ptr_agendaf,FILE *ptr_serviciosf, FILE *ptr_reportesf)
 {
-    FILE *ptr_agendaf, *ptr_serviciosf, *ptr_reportesf;
     struct datos_agenda ag;
     struct datos_servicios serv;
     struct fecha f;
@@ -2982,9 +2978,8 @@ void reporte_venta_por_fecha(void)
     printf("Reporte generado: reporte_venta_fecha.txt\n");
 }
 
-void reporte_generar_archivo_clientes(void)
+void reporte_generar_archivo_clientes(FILE *ptr_clientesf, FILE *ptr_reportesf)
 {
-    FILE *ptr_clientesf, *ptr_reportesf;
     struct datos_clientes cli;
 
     if((ptr_clientesf = fopen("clientes1.dat","rb")) == NULL)
@@ -3027,9 +3022,8 @@ void reporte_generar_archivo_clientes(void)
     printf("Reporte generado: reporte_clientes.txt\n");
 }
 
-void reporte_generar_archivo_empleados(void)
+void reporte_generar_archivo_empleados(FILE *ptr_empleadosf, FILE *ptr_reportesf)
 {
-    FILE *ptr_empleadosf, *ptr_reportesf;
     struct datos_empleados emp;
 
     if((ptr_empleadosf = fopen("empleados.dat","rb")) == NULL)
@@ -3076,7 +3070,7 @@ void reporte_generar_archivo_empleados(void)
     printf("Reporte generado: reporte_empleados.txt\n");
 }
 
-void reporte_mostrar_archivo(void)
+void reporte_mostrar_archivo(FILE *ptr_reportesf)
 {
     FILE *ptr_reportesf;
     char nombre_archivo[150];
