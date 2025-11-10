@@ -1034,7 +1034,7 @@ void consultar_empleado(FILE* Ptr_empleadosdatf)
 //importante empleados
 void modificar_empleado(FILE* Ptr_empleadosdatf)
 {
-	struct datos_empleados empleadof={0};
+	struct datos_empleados empleadof;
 	int opc_consulta,clave_buscar;
 	char nombre_buscar[50],telefono_buscar[50];
 	bool encontrado = true;
@@ -1151,12 +1151,6 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 				printf("Ingrese el nuevo telefono del empleado\n");
 				gets(c->telefono);
 			}while(validar_telefono(c->telefono));
-			
-			
-			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_empleados), SEEK_SET);
-			fwrite(c, sizeof(struct datos_empleados),1,Ptr_fileTxt);
-			printf("Empleado modificado con exito\n");
-
 			break;
 			
 		case 2:
@@ -1165,12 +1159,7 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 				fflush(stdin);
 				printf("Ingrese el nuevo nombre del empleado\n");
 				gets(c->nombre);
-			}while(validar_nombre(c->nombre));
-			
-			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_empleados), SEEK_SET);
-			fwrite(c, sizeof(struct datos_empleados),1,Ptr_fileTxt);
-			
-			printf("Empleado modificado con exito\n");			
+			}while(validar_nombre(c->nombre));	
 			break;
 			
 		case 3:
@@ -1180,12 +1169,6 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 				printf("Ingrese el nuevo correo del empleado\n");
 				gets(c->correo);
 			}while(validar_correo(c->correo));
-			
-			
-			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_empleados), SEEK_SET);
-			fwrite(c, sizeof(struct datos_empleados),1,Ptr_fileTxt);
-			
-			printf("Empleado modificado con exito\n");
 			break;
 		
 		case 4:
@@ -1202,13 +1185,7 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 				printf("Ingrese anio: \n");
 				scanf("%d",&c->fecha_contratacion.ano);			
 			}while(validar_formato_fecha(&c->fecha_contratacion) || validar_fecha_no_futura(&c->fecha_contratacion));
-			
-			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
-            fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
-            printf("Fecha modificada con exito\n");
             break;
-            
-            
         case 5:
             printf("--- Nueva Direccion ---\n");
             
@@ -1249,16 +1226,15 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
                 printf("Ingrese estado: ");
                 gets(c->direccion_empleado.estado);
             }while(validar_nombre(c->direccion_empleado.estado));
-            
-            
-            fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
-            fwrite(c, sizeof(struct datos_empleados),1,Ptr_fileTxt);
-            printf("Direccion modificada con exito\n");
             break;			
 		case 7:
 			printf("Regresando al menu modificar empleado....\n");
 			break;
 	}
+	
+	fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_empleados), SEEK_SET);
+	fwrite(c, sizeof(struct datos_empleados),1,Ptr_fileTxt);	
+	printf("Empleado modificado con exito\n");
 }
 
 //falta una funcion
@@ -2178,8 +2154,6 @@ void borrar_servicio(FILE* ptr_datfilef)
 	else 
 		printf("Servicio no encontrado....");
 }
-
-
 
 bool validar_hora(int *horaf)
 {
