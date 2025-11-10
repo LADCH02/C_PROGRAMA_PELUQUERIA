@@ -566,21 +566,73 @@ bool validar_existencia_clave_agenda(int *clave_agendaf, FILE *Ptr_agendadatf)
 bool validar_correo(char *cadena)
 {
     int i = 0, longitudCadena = strlen(cadena);
-    bool hayArroba = false, correoValido = false;
+    bool hayArroba = false, hayPuntoDespuesArroba = false;
+    int posicionArroba = -1;
+    bool error = false;
 
-    while(i < longitudCadena)
+    // Validar longitud mínima
+    if(longitudCadena < 5) // a@b.c
     {
-        if(cadena[i] == '@')
-            hayArroba = true;
-        if(cadena[i] == '.' && hayArroba)
-        {
-            if(isalpha(cadena[i-1]) != 0 && isalpha(cadena[i+1]) != 0)
-                correoValido = true;
-        }
-        i++;
+        printf(rojo"ERROR: El correo es demasiado corto \a\n"reset);
+        error = true;
     }
 
-    return correoValido;
+    if(!error)
+    {
+        // Buscar '@' y verificar posición
+        while(i < longitudCadena && !hayArroba)
+        {
+            if(cadena[i] == '@')
+            {
+                hayArroba = true;
+                posicionArroba = i;
+            }
+            i++;
+        }
+
+        // Debe haber '@' y no puede estar al inicio o final
+        if(!hayArroba)
+        {
+            printf(rojo"ERROR: El correo debe contener el símbolo @ \a\n"reset);
+            error = true;
+        }
+        else if(posicionArroba == 0)
+        {
+            printf(rojo"ERROR: El correo debe tener texto antes del @ \a\n"reset);
+            error = true;
+        }
+        else if(posicionArroba == longitudCadena - 1)
+        {
+            printf(rojo"ERROR: El correo debe tener texto después del @ \a\n"reset);
+            error = true;
+        }
+    }
+
+    if(!error)
+    {
+        // Buscar punto después del '@'
+        i = posicionArroba + 1;
+        while(i < longitudCadena && !hayPuntoDespuesArroba)
+        {
+            if(cadena[i] == '.')
+            {
+                // Verificar que haya al menos un carácter antes y después del punto
+                if(i > posicionArroba + 1 && i < longitudCadena - 1)
+                {
+                    hayPuntoDespuesArroba = true;
+                }
+            }
+            i++;
+        }
+
+        if(!hayPuntoDespuesArroba)
+        {
+            printf(rojo"ERROR: El correo debe tener un dominio válido (ejemplo: dominio.com) \a\n"reset);
+            error = true;
+        }
+    }
+
+    return error; // true = hay error, false = correo válido
 }
 
 bool validar_nombre(char *nombref)
