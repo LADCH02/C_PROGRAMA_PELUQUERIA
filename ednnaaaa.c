@@ -2742,10 +2742,9 @@ void reporte_empleados_por_puesto( FILE *ptr_empleadosf, FILE *ptr_reportesf)
     struct datos_empleados empleado;
     char puesto[100];
 
-    if((ptr_empleadosf = fopen("empleados.dat","rb")) == NULL)
+    if((ptr_empleadosf = fopen("empleados.dat","r+")) == NULL)
     {
         printf(rojo"No se pudo abrir empleados.dat\n"reset);
-        return;
     }
 
     fflush(stdin);
@@ -2756,18 +2755,33 @@ void reporte_empleados_por_puesto( FILE *ptr_empleadosf, FILE *ptr_reportesf)
     {
         printf(rojo"No se pudo crear reporte_empleados_puesto.txt\n"reset);
         fclose(ptr_empleadosf);
-        return;
     }
 
     fprintf(ptr_reportesf,"LISTADO DE EMPLEADOS POR PUESTO: %s\n\n", puesto);
     fprintf(ptr_reportesf,"%-6s %-20s %-20s %-12s %-15s %-25s %-40s\n",
             "CLAVE","NOMBRE","PUESTO","F.CONTRATO","TELEFONO","CORREO","DIRECCION");
 
-    while(fread(&empleado, sizeof(struct datos_empleados), 1, ptr_empleadosf) == 1)
+    while(!feof(ptr_empleadosf))
     {
+    	fread(&empleado, sizeof(struct datos_empleados), 1, ptr_empleadosf)
         if(empleado.clave != 0 && strcmp(empleado.puesto, puesto) == 0)
         {
             fprintf(ptr_reportesf,
+                    "%-6d %-20s %-20s %02d/%02d/%04d %-15s %-25s %s %d, %s, %s, %s\n",
+                    empleado.clave,
+                    empleado.nombre,
+                    empleado.puesto,
+                    empleado.fecha_contratacion.dia,
+                    empleado.fecha_contratacion.mes,
+                    empleado.fecha_contratacion.ano,
+                    empleado.telefono,
+                    empleado.correo,
+                    empleado.direccion_empleado.calle,
+                    empleado.direccion_empleado.num_exterior,
+                    empleado.direccion_empleado.colonia,
+                    empleado.direccion_empleado.municipio,
+                    empleado.direccion_empleado.estado);
+            printf(
                     "%-6d %-20s %-20s %02d/%02d/%04d %-15s %-25s %s %d, %s, %s, %s\n",
                     empleado.clave,
                     empleado.nombre,
@@ -2795,10 +2809,9 @@ void reporte_listas_por_estatus(FILE *ptr_agendaf, FILE *ptr_reportesf)
     struct datos_agenda ag;
     char estatus[100];
 
-    if((ptr_agendaf = fopen("agenda.dat","rb")) == NULL)
+    if((ptr_agendaf = fopen("agenda.dat","r+")) == NULL)
     {
         printf(rojo"No se pudo abrir agenda.dat\n"reset);
-        return;
     }
 
     fflush(stdin);
@@ -2809,18 +2822,28 @@ void reporte_listas_por_estatus(FILE *ptr_agendaf, FILE *ptr_reportesf)
     {
         printf(rojo"No se pudo crear reporte_listas_estatus.txt\n"reset);
         fclose(ptr_agendaf);
-        return;
     }
 
     fprintf(ptr_reportesf,"LISTADO DE CITAS POR ESTATUS: %s\n\n", estatus);
     fprintf(ptr_reportesf,"%-6s %-10s %-10s %-10s %-12s %-8s\n",
             "CLAVE","EMP","CLI","SERV","FECHA","HORA");
 
-    while(fread(&ag, sizeof(struct datos_agenda), 1, ptr_agendaf) == 1)
+    while(!feof(ptr_agendaf))
     {
+    	fread(&ag, sizeof(struct datos_agenda), 1, ptr_agendaf)
         if(ag.clave != 0 && strcmp(ag.estatus, estatus) == 0)
         {
             fprintf(ptr_reportesf,
+                    "%-6d %-10d %-10d %-10d %02d/%02d/%04d %-8d\n",
+                    ag.clave,
+                    ag.clave_empleado,
+                    ag.clave_cliente,
+                    ag.clave_servicio,
+                    ag.fecha_agendada.dia,
+                    ag.fecha_agendada.mes,
+                    ag.fecha_agendada.ano,
+                    ag.hora);
+            printf(
                     "%-6d %-10d %-10d %-10d %02d/%02d/%04d %-8d\n",
                     ag.clave,
                     ag.clave_empleado,
@@ -2843,10 +2866,9 @@ void reporte_listas_por_fecha(FILE *ptr_agendaf, FILE *ptr_reportesf)
     struct datos_agenda ag;
     struct fecha f;
 
-    if((ptr_agendaf = fopen("agenda.dat","rb")) == NULL)
+    if((ptr_agendaf = fopen("agenda.dat","r+")) == NULL)
     {
         printf(rojo"No se pudo abrir agenda.dat\n"reset);
-        return;
     }
 
     do
@@ -2862,7 +2884,6 @@ void reporte_listas_por_fecha(FILE *ptr_agendaf, FILE *ptr_reportesf)
     {
         printf(rojo"No se pudo crear reporte_listas_fecha.txt\n"reset);
         fclose(ptr_agendaf);
-        return;
     }
 
     fprintf(ptr_reportesf,"LISTADO DE CITAS POR FECHA: %02d/%02d/%04d\n\n",
@@ -2870,14 +2891,26 @@ void reporte_listas_por_fecha(FILE *ptr_agendaf, FILE *ptr_reportesf)
     fprintf(ptr_reportesf,"%-6s %-10s %-10s %-10s %-12s %-8s %-15s\n",
             "CLAVE","EMP","CLI","SERV","FECHA","HORA","ESTATUS");
 
-    while(fread(&ag, sizeof(struct datos_agenda), 1, ptr_agendaf) == 1)
+    while(!feof(ptr_agendaf))
     {
+    	fread(&ag, sizeof(struct datos_agenda), 1, ptr_agendaf)
         if(ag.clave != 0 &&
            ag.fecha_agendada.dia == f.dia &&
            ag.fecha_agendada.mes == f.mes &&
            ag.fecha_agendada.ano == f.ano)
         {
             fprintf(ptr_reportesf,
+                    "%-6d %-10d %-10d %-10d %02d/%02d/%04d %-8d %-15s\n",
+                    ag.clave,
+                    ag.clave_empleado,
+                    ag.clave_cliente,
+                    ag.clave_servicio,
+                    ag.fecha_agendada.dia,
+                    ag.fecha_agendada.mes,
+                    ag.fecha_agendada.ano,
+                    ag.hora,
+                    ag.estatus);
+            printf(
                     "%-6d %-10d %-10d %-10d %02d/%02d/%04d %-8d %-15s\n",
                     ag.clave,
                     ag.clave_empleado,
@@ -2903,13 +2936,12 @@ void reporte_venta_por_fecha(FILE *ptr_agendaf,FILE *ptr_serviciosf, FILE *ptr_r
     struct fecha f;
     float total = 0.0f;
 
-    if((ptr_agendaf = fopen("agenda.dat","rb")) == NULL ||
-       (ptr_serviciosf = fopen("servicios.dat","rb")) == NULL)
+    if((ptr_agendaf = fopen("agenda.dat","r+")) == NULL ||
+       (ptr_serviciosf = fopen("servicios.dat","r+")) == NULL)
     {
         printf(rojo"No se pudo abrir agenda.dat o servicios.dat\n"reset);
         if(ptr_agendaf) fclose(ptr_agendaf);
         if(ptr_serviciosf) fclose(ptr_serviciosf);
-        return;
     }
 
     do
@@ -2926,7 +2958,6 @@ void reporte_venta_por_fecha(FILE *ptr_agendaf,FILE *ptr_serviciosf, FILE *ptr_r
         printf(rojo"No se pudo crear reporte_venta_fecha.txt\n"reset);
         fclose(ptr_agendaf);
         fclose(ptr_serviciosf);
-        return;
     }
 
     fprintf(ptr_reportesf,"VENTA POR FECHA: %02d/%02d/%04d\n\n",
@@ -2956,6 +2987,16 @@ void reporte_venta_por_fecha(FILE *ptr_agendaf,FILE *ptr_serviciosf, FILE *ptr_r
             }
 
             fprintf(ptr_reportesf,
+                    "%-6d %-10d %-10d %-10d %02d/%02d/%04d %-10.2f\n",
+                    ag.clave,
+                    ag.clave_cliente,
+                    ag.clave_empleado,
+                    ag.clave_servicio,
+                    ag.fecha_agendada.dia,
+                    ag.fecha_agendada.mes,
+                    ag.fecha_agendada.ano,
+                    precio);
+            printf(
                     "%-6d %-10d %-10d %-10d %02d/%02d/%04d %-10.2f\n",
                     ag.clave,
                     ag.clave_cliente,
