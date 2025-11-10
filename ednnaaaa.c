@@ -1,3 +1,7 @@
+//CARLOS EDUARDO BARRIOS BARRÓN
+//LUIS ANTONIO DÍAZ CHAVÉZ
+//OLIVER ALEXANDER VEGA CASAS
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
