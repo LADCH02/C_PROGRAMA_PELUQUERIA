@@ -1033,7 +1033,7 @@ void modificar_empleado(FILE* Ptr_empleadosdatf)
 				while(!feof(Ptr_empleadosdatf) && encontrado)
 				{
 					fread(&empleadof, sizeof(struct datos_empleados),1,Ptr_empleadosdatf);
-					if(strcmp(empleadof.nombre,nombre_buscar) == 0)
+					if(strcmp(empleadof.nombre,nombre_buscar) == 0 && !feof(Ptr_empleadosdatf))
 					{
 						modificar_menu_empleado(Ptr_empleadosdatf,&empleadof);
 						encontrado = false;
@@ -1056,7 +1056,7 @@ void modificar_empleado(FILE* Ptr_empleadosdatf)
 				while(!feof(Ptr_empleadosdatf) && encontrado)
 				{
 					fread(&empleadof, sizeof(struct datos_empleados),1,Ptr_empleadosdatf);
-					if(strcmp(empleadof.telefono,telefono_buscar)==0)
+					if(strcmp(empleadof.telefono,telefono_buscar)==0&&!feof(Ptr_empleadosdatf))
 					{
 						modificar_menu_empleado(Ptr_empleadosdatf,&empleadof);
 						encontrado = false;
