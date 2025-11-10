@@ -128,17 +128,17 @@ void reportes(FILE*,FILE*,FILE*,FILE*, FILE*);
 bool validar_sub_menu_reportes(char);
 
 // sub-funciones por cada opción del menú de reportes
-void reporte_empleados_por_puesto(FILE *,FILE *);          // a
-void reporte_listas_por_estatus(FILE *,FILE *);            // b
-void reporte_listas_por_fecha(FILE *,FILE *);              // c
-void reporte_venta_por_fecha(FILE *,FILE *,FILE *);               // d
-void reporte_generar_archivo_clientes(FILE *,FILE *);      // e
-void reporte_generar_archivo_empleados(FILE *,FILE *);     // f
-void reporte_mostrar_archivo(FILE *);               // g
+void reporte_empleados_por_puesto(FILE *,FILE *);          
+void reporte_listas_por_estatus(FILE *,FILE *);            
+void reporte_listas_por_fecha(FILE *,FILE *);              
+void reporte_venta_por_fecha(FILE *,FILE *,FILE *);               
+void reporte_generar_archivo_clientes(FILE *,FILE *);      
+void reporte_generar_archivo_empleados(FILE *,FILE *);     
+void reporte_mostrar_archivo(FILE *);               
 
 //funciones para reportes
 void reportes(FILE*,FILE*,FILE*,FILE*, FILE*);
-void validar_sub_menu_reportes(char );
+bool validar_sub_menu_reportes(char );
 
 // Espacios
 void espacios_blancos(FILE*,FILE*,FILE*, FILE*);
@@ -192,7 +192,7 @@ main()
 				break;
 			case 6: 
 				printf("GRACIAS POR USAR EL PROGRAMA (PIA)");
-				break
+				break;
 				
 		}
 						
@@ -591,8 +591,8 @@ bool validar_correo(char *cadena)
     int posicionArroba = -1;
     bool error = false;
 
-    // Validar longitud mínima
-    if(longitudCadena < 5) // a@b.c
+    
+    if(longitudCadena < 5) 
     {
         printf(rojo"ERROR: El correo es demasiado corto \a\n"reset);
         error = true;
@@ -600,7 +600,7 @@ bool validar_correo(char *cadena)
 
     if(!error)
     {
-        // Buscar '@' y verificar posición
+        
         while(i < longitudCadena && !hayArroba)
         {
             if(cadena[i] == '@')
@@ -611,7 +611,7 @@ bool validar_correo(char *cadena)
             i++;
         }
 
-        // Debe haber '@' y no puede estar al inicio o final
+        
         if(!hayArroba)
         {
             printf(rojo"ERROR: El correo debe contener el símbolo @ \a\n"reset);
@@ -631,13 +631,12 @@ bool validar_correo(char *cadena)
 
     if(!error)
     {
-        // Buscar punto después del '@'
         i = posicionArroba + 1;
         while(i < longitudCadena && !hayPuntoDespuesArroba)
         {
             if(cadena[i] == '.')
             {
-                // Verificar que haya al menos un carácter antes y después del punto
+               
                 if(i > posicionArroba + 1 && i < longitudCadena - 1)
                 {
                     hayPuntoDespuesArroba = true;
@@ -653,7 +652,7 @@ bool validar_correo(char *cadena)
         }
     }
 
-    return error; // true = hay error, false = correo válido
+    return error; 
 }
 
 bool validar_nombre(char *nombref)
@@ -1807,7 +1806,6 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 	}
 }
 
-// hasta aqui
 
 void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_ServiciosdatF, FILE*ptr_agendadatF)
 {	
@@ -1823,7 +1821,7 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 
 	int i;
 	
-	//erchivo binario clientes
+
 	if((Ptr_ClientesdatF = fopen("clientes1.dat","r+"))== NULL) 
 	{
 		printf("No se encontro archivo clientes....creando archivo clientes\n");
@@ -1837,7 +1835,7 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 	else
 		printf("archivo clientes encontrado\n");
 	
-	//archivo binario empleados
+
 	if((Ptr_EmpleadosdatF = fopen("empleados.dat","r+"))== NULL) 
 	{
 		printf("No se encontro archivo empleados....creando archivo empleados\n");
@@ -1850,8 +1848,7 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 	}
 	else
 		printf("archivo empleados encontrado\n");
-		
-	//archivo binario servicios
+
 	if((Ptr_ServiciosdatF = fopen("servicios.dat","r+"))== NULL) 
 	{
 		printf("No se encontro archivo servicios....creando archivo servicios\n");
@@ -2042,7 +2039,7 @@ void consultar_servicio(FILE* ptrservicio)
 	}while(opc_consulta != 2);
 }
 
-// importante servicios
+
 void modificar_servicio(FILE* ptrservicio)
 {
 	struct datos_servicios serviciof;
@@ -2178,7 +2175,13 @@ void borrar_servicio(FILE* ptr_datfilef)
 
 bool validar_hora(int *horaf)
 {
-	
+    bool cambio = false;
+    if(*horaf < 0 || *horaf > 23)
+    {   
+        printf(rojo"ERROR: Ingresa una hora válida (0-23) \a\n"reset);
+        cambio = true;
+    }
+    return cambio;
 }
 
 void agenda(FILE *Ptr_fileagenda, FILE *Ptr_filecliente, FILE *Ptr_fileempleado, FILE *Ptr_fileservicio)
@@ -2763,7 +2766,7 @@ void reporte_empleados_por_puesto( FILE *ptr_empleadosf, FILE *ptr_reportesf)
 
     while(!feof(ptr_empleadosf))
     {
-    	fread(&empleado, sizeof(struct datos_empleados), 1, ptr_empleadosf)
+    	fread(&empleado, sizeof(struct datos_empleados), 1, ptr_empleadosf);
         if(empleado.clave != 0 && strcmp(empleado.puesto, puesto) == 0)
         {
             fprintf(ptr_reportesf,
@@ -2830,7 +2833,7 @@ void reporte_listas_por_estatus(FILE *ptr_agendaf, FILE *ptr_reportesf)
 
     while(!feof(ptr_agendaf))
     {
-    	fread(&ag, sizeof(struct datos_agenda), 1, ptr_agendaf)
+    	fread(&ag, sizeof(struct datos_agenda), 1, ptr_agendaf);
         if(ag.clave != 0 && strcmp(ag.estatus, estatus) == 0)
         {
             fprintf(ptr_reportesf,
@@ -2893,7 +2896,7 @@ void reporte_listas_por_fecha(FILE *ptr_agendaf, FILE *ptr_reportesf)
 
     while(!feof(ptr_agendaf))
     {
-    	fread(&ag, sizeof(struct datos_agenda), 1, ptr_agendaf)
+    	fread(&ag, sizeof(struct datos_agenda), 1, ptr_agendaf);
         if(ag.clave != 0 &&
            ag.fecha_agendada.dia == f.dia &&
            ag.fecha_agendada.mes == f.mes &&
@@ -3113,7 +3116,6 @@ void reporte_generar_archivo_empleados(FILE *ptr_empleadosf, FILE *ptr_reportesf
 
 void reporte_mostrar_archivo(FILE *ptr_reportesf)
 {
-    FILE *ptr_reportesf;
     char nombre_archivo[150];
     char linea[400];
 
