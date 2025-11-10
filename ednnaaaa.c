@@ -1554,11 +1554,12 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 				}while(validar_nombre(nombre_ciliente));
 				
 				rewind(Ptr_fileTxt);
-				fread(&clientef, sizeof(struct datos_clientes),1,Ptr_fileTxt);
 				
 				while(!feof(Ptr_fileTxt))
 				{
-					if(strcmp(clientef.nombre,nombre_ciliente))
+					fread(&clientef, sizeof(struct datos_clientes),1,Ptr_fileTxt);
+
+					if(strcmp(clientef.nombre,nombre_ciliente) && !feof(Ptr_fileTxt))
 					{
 						modificar_menu_clientes(Ptr_fileTxt,&clientef);
 						encontrado = false;
@@ -1576,12 +1577,11 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 					gets(telefono_ciliente);
 				}while(validar_telefono(telefono_ciliente));
 				
-				rewind(Ptr_fileTxt);
-				fread(&clientef, sizeof(struct datos_clientes),1,Ptr_fileTxt);
-				
+				rewind(Ptr_fileTxt);				
 				while(!feof(Ptr_fileTxt))
 				{
-					if(strcmp(clientef.telefono,telefono_ciliente))
+					fread(&clientef, sizeof(struct datos_clientes),1,Ptr_fileTxt);
+					if(strcmp(clientef.telefono,telefono_ciliente) && !feof(Ptr_fileTxt))
 					{
 						modificar_menu_clientes(Ptr_fileTxt,&clientef);
 						encontrado = false;
