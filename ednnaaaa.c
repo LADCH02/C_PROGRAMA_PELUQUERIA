@@ -1177,7 +1177,7 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 			do
 			{
 				fflush(stdin);
-				printf("Ingrese el nuevo correo del cliente\n");
+				printf("Ingrese el nuevo correo del empleado\n");
 				gets(c->correo);
 			}while(validar_correo(c->correo));
 			
