@@ -1033,7 +1033,7 @@ void modificar_empleado(FILE* Ptr_empleadosdatf)
 				while(!feof(Ptr_empleadosdatf) && encontrado)
 				{
 					fread(&empleadof, sizeof(struct datos_empleados),1,Ptr_empleadosdatf);
-					if(strcmp(empleadof.nombre,nombre_buscar))
+					if(strcmp(empleadof.nombre,nombre_buscar) == 0)
 					{
 						modificar_menu_empleado(Ptr_empleadosdatf,&empleadof);
 						encontrado = false;
@@ -1052,12 +1052,11 @@ void modificar_empleado(FILE* Ptr_empleadosdatf)
 				}while(validar_telefono(telefono_buscar));
 				
 				rewind(Ptr_empleadosdatf);
-				fread(&empleadof, sizeof(struct datos_empleados),1,Ptr_empleadosdatf);
 				
 				while(!feof(Ptr_empleadosdatf) && encontrado)
 				{
 					fread(&empleadof, sizeof(struct datos_empleados),1,Ptr_empleadosdatf);
-					if(strcmp(empleadof.telefono,telefono_buscar))
+					if(strcmp(empleadof.telefono,telefono_buscar)==0)
 					{
 						modificar_menu_empleado(Ptr_empleadosdatf,&empleadof);
 						encontrado = false;
@@ -1583,7 +1582,7 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 				{
 					fread(&clientef, sizeof(struct datos_clientes),1,Ptr_fileTxt);
 
-					if(strcmp(clientef.nombre,nombre_ciliente) && !feof(Ptr_fileTxt))
+					if(strcmp(clientef.nombre,nombre_ciliente) == 0 && !feof(Ptr_fileTxt))
 					{
 						modificar_menu_clientes(Ptr_fileTxt,&clientef);
 						encontrado = false;
@@ -1605,7 +1604,7 @@ void modificar_ciliente(FILE* Ptr_fileTxt)
 				while(!feof(Ptr_fileTxt) && encontrado)
 				{
 					fread(&clientef, sizeof(struct datos_clientes),1,Ptr_fileTxt);
-					if(strcmp(clientef.telefono,telefono_ciliente) && !feof(Ptr_fileTxt))
+					if(strcmp(clientef.telefono,telefono_ciliente) == 0 && !feof(Ptr_fileTxt))
 					{
 						modificar_menu_clientes(Ptr_fileTxt,&clientef);
 						encontrado = false;
