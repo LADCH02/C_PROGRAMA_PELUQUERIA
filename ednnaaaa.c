@@ -69,6 +69,8 @@ struct datos_agenda{
 };
 
 
+
+// funciones para validar
 bool validar_sub_menu(char );
 bool validar_siono(char *, int);
 bool validar_clave(int *);
@@ -82,6 +84,8 @@ bool validar_duracion(struct tiempo *);
 bool validar_precio(float *);
 bool validar_correo(char *);
 
+
+// funciones usadas para clientes
 void clientes(FILE*);
 void agregar_cliente(FILE*);
 void consultar(FILE*);
@@ -90,6 +94,7 @@ void modificar_menu_clientes(FILE *, struct datos_clientes *c);
 void borrar_cliente(FILE*);
 bool validar_existencia_clave_cliente(int *, FILE *, bool);
 
+// Funciones usadas para empleados
 void empleados(FILE*);
 void agregar_empleado(FILE*);
 void consultar_empleado(FILE*);
@@ -98,6 +103,7 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c);
 void borrar_empleado(FILE*);
 bool validar_existencia_clave_empleado(int *, FILE *, bool);
 
+// funciones usadas para servicios
 void servicios(FILE*);
 void agregar_servicios(FILE*);
 void consultar_servicio(FILE*);
@@ -106,6 +112,7 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c);
 void borrar_servicio(FILE*);
 bool validar_existencia_clave_servicio(int *, FILE *, bool);
 
+// funciones usadas para agenda
 void agenda(FILE*, FILE*, FILE*, FILE*);
 void agregar_agenda(FILE* , FILE* , FILE*, FILE* );
 void consultar_agenda(FILE* );
@@ -116,10 +123,28 @@ bool validar_estatus(char *);
 void modificar_menu_agenda(FILE *, FILE *, FILE *, FILE *, struct datos_agenda *);
 bool validar_hora(int *);
 
+// funciones para reportes
 void reportes(FILE*,FILE*,FILE*,FILE*, FILE*);
-bool validar_sub_menu_reportes(char );
+bool validar_sub_menu_reportes(char);
 
+// sub-funciones por cada opción del menú de reportes
+void reporte_empleados_por_puesto(void);          // a
+void reporte_listas_por_estatus(void);            // b
+void reporte_listas_por_fecha(void);              // c
+void reporte_venta_por_fecha(void);               // d
+void reporte_generar_archivo_clientes(void);      // e
+void reporte_generar_archivo_empleados(void);     // f
+void reporte_mostrar_archivo(void);               // g
+
+//funciones para reportes
+void reportes(FILE*,FILE*,FILE*,FILE*, FILE*);
+void validar_sub_menu_reportes(char );
+
+// Espacios
 void espacios_blancos(FILE*,FILE*,FILE*, FILE*);
+
+
+
 
 main()
 {
@@ -167,7 +192,7 @@ main()
 				break;
 			case 6: 
 				printf("GRACIAS POR USAR EL PROGRAMA (PIA)");
-				break;
+				break
 				
 		}
 						
@@ -566,8 +591,8 @@ bool validar_correo(char *cadena)
     int posicionArroba = -1;
     bool error = false;
 
-    
-    if(longitudCadena < 5) 
+    // Validar longitud mínima
+    if(longitudCadena < 5) // a@b.c
     {
         printf(rojo"ERROR: El correo es demasiado corto \a\n"reset);
         error = true;
@@ -575,7 +600,7 @@ bool validar_correo(char *cadena)
 
     if(!error)
     {
-        
+        // Buscar '@' y verificar posición
         while(i < longitudCadena && !hayArroba)
         {
             if(cadena[i] == '@')
@@ -586,7 +611,7 @@ bool validar_correo(char *cadena)
             i++;
         }
 
-    
+        // Debe haber '@' y no puede estar al inicio o final
         if(!hayArroba)
         {
             printf(rojo"ERROR: El correo debe contener el símbolo @ \a\n"reset);
@@ -606,11 +631,13 @@ bool validar_correo(char *cadena)
 
     if(!error)
     {
+        // Buscar punto después del '@'
         i = posicionArroba + 1;
         while(i < longitudCadena && !hayPuntoDespuesArroba)
         {
             if(cadena[i] == '.')
             {
+                // Verificar que haya al menos un carácter antes y después del punto
                 if(i > posicionArroba + 1 && i < longitudCadena - 1)
                 {
                     hayPuntoDespuesArroba = true;
@@ -626,7 +653,7 @@ bool validar_correo(char *cadena)
         }
     }
 
-    return error; 
+    return error; // true = hay error, false = correo válido
 }
 
 bool validar_nombre(char *nombref)
@@ -880,6 +907,7 @@ void agregar_empleado(FILE* Ptr_empleadosdatf)
 	}while(validar_siono(siono, 2));
 }
 
+// arreglar impresion
 void consultar_empleado(FILE* Ptr_empleadosdatf)
 {
 	struct datos_empleados empleadof={0};
@@ -1024,7 +1052,7 @@ void consultar_empleado(FILE* Ptr_empleadosdatf)
 	}while(opc_consulta != 4);
 }
 
-
+//importante empleados
 void modificar_empleado(FILE* Ptr_empleadosdatf)
 {
 	struct datos_empleados empleadof;
@@ -1230,6 +1258,7 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 	printf("Empleado modificado con exito\n");
 }
 
+//falta una funcion
 void borrar_empleado(FILE*ptr_datfilef)
 {
 	struct fecha fecha_blanco = {0,0,0};
@@ -1405,7 +1434,7 @@ bool validar_estatus(char *estatusf)
     }
 	return estado;	
 }
-
+ // areglar impresion
 void consultar(FILE* Ptr_fileTxt)
 {
 	struct datos_clientes clientef={0};
@@ -1549,7 +1578,7 @@ void consultar(FILE* Ptr_fileTxt)
 	}while(opc_consulta != 4);
 }
 
-
+//importante clientes
 void modificar_ciliente(FILE* Ptr_fileTxt)
 {
 	struct datos_clientes clientef;
@@ -1778,6 +1807,8 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 	}
 }
 
+// hasta aqui
+
 void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_ServiciosdatF, FILE*ptr_agendadatF)
 {	
 	struct fecha fecha_blanco = {0,0,0};
@@ -1792,7 +1823,7 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 
 	int i;
 	
-	
+	//erchivo binario clientes
 	if((Ptr_ClientesdatF = fopen("clientes1.dat","r+"))== NULL) 
 	{
 		printf("No se encontro archivo clientes....creando archivo clientes\n");
@@ -1806,7 +1837,7 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 	else
 		printf("archivo clientes encontrado\n");
 	
-	
+	//archivo binario empleados
 	if((Ptr_EmpleadosdatF = fopen("empleados.dat","r+"))== NULL) 
 	{
 		printf("No se encontro archivo empleados....creando archivo empleados\n");
@@ -1820,7 +1851,7 @@ void espacios_blancos(FILE*Ptr_ClientesdatF, FILE*Ptr_EmpleadosdatF, FILE*Ptr_Se
 	else
 		printf("archivo empleados encontrado\n");
 		
-	
+	//archivo binario servicios
 	if((Ptr_ServiciosdatF = fopen("servicios.dat","r+"))== NULL) 
 	{
 		printf("No se encontro archivo servicios....creando archivo servicios\n");
@@ -2011,7 +2042,7 @@ void consultar_servicio(FILE* ptrservicio)
 	}while(opc_consulta != 2);
 }
 
-
+// importante servicios
 void modificar_servicio(FILE* ptrservicio)
 {
 	struct datos_servicios serviciof;
@@ -2118,7 +2149,7 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
 	}
 }
 
-
+// falta una funcion
 void borrar_servicio(FILE* ptr_datfilef)
 {
 	struct tiempo tiempo_blanco = {0,0};
@@ -2626,52 +2657,450 @@ void borrar_agenda(FILE*ptr_datfilef)
 	
 }
 
-
 void reportes(FILE*ptr_agendaf,FILE*ptr_clientesf,FILE*ptr_empleadosf, FILE*ptr_serviciosf, FILE*ptr_reportesf)
 {
-	char opcRep;
-		
-	do
-	{
-		do
-		{
-			printf("%20s\n", "REPORTE");
-			printf("%-15s\n","a.-Listado de empelados por puesto");
-			printf("%-15s\n","b.-Listado de listas por estatus");
-			printf("%-15s\n","c.-Listado de lista por fecha");
-			printf("%-15s\n","d.-Venta por fecha");
-			printf("%-15s\n","e.-Generar archivo de clientes");
-			printf("%-15s\n","f.-Generar archivo de empleados");
-			printf("%-15s\n","g.-Mostrar archivoo");
-			printf("%-15s\n","h.-Salir");
-			scanf("%d", &opcRep);
-			fflush(stdin);
-			if(validar_sub_menu_reportes(opcRep))
-				printf(rojo"ERROR ingrese un valor correcto\a\n"reset);	
-		}while(validar_sub_menu_reportes(opcRep));
-		
-		switch (opcRep)
-		{
-			case 'a':			
-			
-			case 'b':
-			
-			case 'c':
-			
-			case 'd':
-			
-		}
-						
-	}while(opcRep != 'h');
+    char opcRep;
+
+    do
+    {
+        do
+        {
+            printf("\n%20s\n", "REPORTE");
+            printf("%-40s\n","a.-Listado de empelados por puesto");
+            printf("%-40s\n","b.-Listado de listas por estatus");
+            printf("%-40s\n","c.-Listado de lista por fecha");
+            printf("%-40s\n","d.-Venta por fecha");
+            printf("%-40s\n","e.-Generar archivo de clientes");
+            printf("%-40s\n","f.-Generar archivo de empleados");
+            printf("%-40s\n","g.-Mostrar archivoo");
+            printf("%-40s\n","h.-Salir");
+            printf("Opcion: ");
+            fflush(stdin);
+            scanf(" %c",&opcRep); // espacio para evitar salto de línea pendiente
+        }while(validar_sub_menu_reportes(opcRep));
+
+        switch(opcRep)
+        {
+            case 'a': case 'A':
+                reporte_empleados_por_puesto();
+                break;
+
+            case 'b': case 'B':
+                reporte_listas_por_estatus();
+                break;
+
+            case 'c': case 'C':
+                reporte_listas_por_fecha();
+                break;
+
+            case 'd': case 'D':
+                reporte_venta_por_fecha();
+                break;
+
+            case 'e': case 'E':
+                reporte_generar_archivo_clientes();
+                break;
+
+            case 'f': case 'F':
+                reporte_generar_archivo_empleados();
+                break;
+
+            case 'g': case 'G':
+                reporte_mostrar_archivo();
+                break;
+
+            case 'h': case 'H':
+                // salir
+                break;
+        }
+
+    }while(opcRep != 'h' && opcRep != 'H');
 }
 
 bool validar_sub_menu_reportes(char fopc_sub_menu)
 {
-	bool cambio = false;
-	if(fopc_sub_menu < 'a' || fopc_sub_menu > 'h')
-	{	
-		cambio = true;
-		printf(rojo"ERROR ingrese clave correcta \a\n"reset);
-	}	
-	return cambio;
+    bool cambio = false;
+
+    if(!(fopc_sub_menu == 'a' || fopc_sub_menu == 'A' ||
+         fopc_sub_menu == 'b' || fopc_sub_menu == 'B' ||
+         fopc_sub_menu == 'c' || fopc_sub_menu == 'C' ||
+         fopc_sub_menu == 'd' || fopc_sub_menu == 'D' ||
+         fopc_sub_menu == 'e' || fopc_sub_menu == 'E' ||
+         fopc_sub_menu == 'f' || fopc_sub_menu == 'F' ||
+         fopc_sub_menu == 'g' || fopc_sub_menu == 'G' ||
+         fopc_sub_menu == 'h' || fopc_sub_menu == 'H'))
+    {
+        cambio = true;
+        printf(rojo"ERROR ingrese una opcion valida (a-h)\a\n"reset);
+    }
+
+    return cambio;
 }
+
+void reporte_empleados_por_puesto(void)
+{
+    FILE *ptr_empleadosf, *ptr_reportesf;
+    struct datos_empleados empleado;
+    char puesto[100];
+
+    if((ptr_empleadosf = fopen("empleados.dat","rb")) == NULL)
+    {
+        printf(rojo"No se pudo abrir empleados.dat\n"reset);
+        return;
+    }
+
+    fflush(stdin);
+    printf("Ingrese el puesto a listar: ");
+    gets(puesto);
+
+    if((ptr_reportesf = fopen("reporte_empleados_puesto.txt","w")) == NULL)
+    {
+        printf(rojo"No se pudo crear reporte_empleados_puesto.txt\n"reset);
+        fclose(ptr_empleadosf);
+        return;
+    }
+
+    fprintf(ptr_reportesf,"LISTADO DE EMPLEADOS POR PUESTO: %s\n\n", puesto);
+    fprintf(ptr_reportesf,"%-6s %-20s %-20s %-12s %-15s %-25s %-40s\n",
+            "CLAVE","NOMBRE","PUESTO","F.CONTRATO","TELEFONO","CORREO","DIRECCION");
+
+    while(fread(&empleado, sizeof(struct datos_empleados), 1, ptr_empleadosf) == 1)
+    {
+        if(empleado.clave != 0 && strcmp(empleado.puesto, puesto) == 0)
+        {
+            fprintf(ptr_reportesf,
+                    "%-6d %-20s %-20s %02d/%02d/%04d %-15s %-25s %s %d, %s, %s, %s\n",
+                    empleado.clave,
+                    empleado.nombre,
+                    empleado.puesto,
+                    empleado.fecha_contratacion.dia,
+                    empleado.fecha_contratacion.mes,
+                    empleado.fecha_contratacion.ano,
+                    empleado.telefono,
+                    empleado.correo,
+                    empleado.direccion_empleado.calle,
+                    empleado.direccion_empleado.num_exterior,
+                    empleado.direccion_empleado.colonia,
+                    empleado.direccion_empleado.municipio,
+                    empleado.direccion_empleado.estado);
+        }
+    }
+
+    fclose(ptr_empleadosf);
+    fclose(ptr_reportesf);
+    printf("Reporte generado: reporte_empleados_puesto.txt\n");
+}
+
+void reporte_listas_por_estatus(void)
+{
+    FILE *ptr_agendaf, *ptr_reportesf;
+    struct datos_agenda ag;
+    char estatus[100];
+
+    if((ptr_agendaf = fopen("agenda.dat","rb")) == NULL)
+    {
+        printf(rojo"No se pudo abrir agenda.dat\n"reset);
+        return;
+    }
+
+    fflush(stdin);
+    printf("Ingrese el estatus a listar: ");
+    gets(estatus);
+
+    if((ptr_reportesf = fopen("reporte_listas_estatus.txt","w")) == NULL)
+    {
+        printf(rojo"No se pudo crear reporte_listas_estatus.txt\n"reset);
+        fclose(ptr_agendaf);
+        return;
+    }
+
+    fprintf(ptr_reportesf,"LISTADO DE CITAS POR ESTATUS: %s\n\n", estatus);
+    fprintf(ptr_reportesf,"%-6s %-10s %-10s %-10s %-12s %-8s\n",
+            "CLAVE","EMP","CLI","SERV","FECHA","HORA");
+
+    while(fread(&ag, sizeof(struct datos_agenda), 1, ptr_agendaf) == 1)
+    {
+        if(ag.clave != 0 && strcmp(ag.estatus, estatus) == 0)
+        {
+            fprintf(ptr_reportesf,
+                    "%-6d %-10d %-10d %-10d %02d/%02d/%04d %-8d\n",
+                    ag.clave,
+                    ag.clave_empleado,
+                    ag.clave_cliente,
+                    ag.clave_servicio,
+                    ag.fecha_agendada.dia,
+                    ag.fecha_agendada.mes,
+                    ag.fecha_agendada.ano,
+                    ag.hora);
+        }
+    }
+
+    fclose(ptr_agendaf);
+    fclose(ptr_reportesf);
+    printf("Reporte generado: reporte_listas_estatus.txt\n");
+}
+
+void reporte_listas_por_fecha(void)
+{
+    FILE *ptr_agendaf, *ptr_reportesf;
+    struct datos_agenda ag;
+    struct fecha f;
+
+    if((ptr_agendaf = fopen("agenda.dat","rb")) == NULL)
+    {
+        printf(rojo"No se pudo abrir agenda.dat\n"reset);
+        return;
+    }
+
+    do
+    {
+        printf("--- Ingrese la fecha a listar ---\n");
+        printf("Dia: ");  scanf("%d",&f.dia);
+        printf("Mes: ");  scanf("%d",&f.mes);
+        printf("Anio: "); scanf("%d",&f.ano);
+    }while(validar_formato_fecha(&f));
+    fflush(stdin);
+
+    if((ptr_reportesf = fopen("reporte_listas_fecha.txt","w")) == NULL)
+    {
+        printf(rojo"No se pudo crear reporte_listas_fecha.txt\n"reset);
+        fclose(ptr_agendaf);
+        return;
+    }
+
+    fprintf(ptr_reportesf,"LISTADO DE CITAS POR FECHA: %02d/%02d/%04d\n\n",
+            f.dia,f.mes,f.ano);
+    fprintf(ptr_reportesf,"%-6s %-10s %-10s %-10s %-12s %-8s %-15s\n",
+            "CLAVE","EMP","CLI","SERV","FECHA","HORA","ESTATUS");
+
+    while(fread(&ag, sizeof(struct datos_agenda), 1, ptr_agendaf) == 1)
+    {
+        if(ag.clave != 0 &&
+           ag.fecha_agendada.dia == f.dia &&
+           ag.fecha_agendada.mes == f.mes &&
+           ag.fecha_agendada.ano == f.ano)
+        {
+            fprintf(ptr_reportesf,
+                    "%-6d %-10d %-10d %-10d %02d/%02d/%04d %-8d %-15s\n",
+                    ag.clave,
+                    ag.clave_empleado,
+                    ag.clave_cliente,
+                    ag.clave_servicio,
+                    ag.fecha_agendada.dia,
+                    ag.fecha_agendada.mes,
+                    ag.fecha_agendada.ano,
+                    ag.hora,
+                    ag.estatus);
+        }
+    }
+
+    fclose(ptr_agendaf);
+    fclose(ptr_reportesf);
+    printf("Reporte generado: reporte_listas_fecha.txt\n");
+}
+
+void reporte_venta_por_fecha(void)
+{
+    FILE *ptr_agendaf, *ptr_serviciosf, *ptr_reportesf;
+    struct datos_agenda ag;
+    struct datos_servicios serv;
+    struct fecha f;
+    float total = 0.0f;
+
+    if((ptr_agendaf = fopen("agenda.dat","rb")) == NULL ||
+       (ptr_serviciosf = fopen("servicios.dat","rb")) == NULL)
+    {
+        printf(rojo"No se pudo abrir agenda.dat o servicios.dat\n"reset);
+        if(ptr_agendaf) fclose(ptr_agendaf);
+        if(ptr_serviciosf) fclose(ptr_serviciosf);
+        return;
+    }
+
+    do
+    {
+        printf("--- Ingrese la fecha de venta ---\n");
+        printf("Dia: ");  scanf("%d",&f.dia);
+        printf("Mes: ");  scanf("%d",&f.mes);
+        printf("Anio: "); scanf("%d",&f.ano);
+    }while(validar_formato_fecha(&f));
+    fflush(stdin);
+
+    if((ptr_reportesf = fopen("reporte_venta_fecha.txt","w")) == NULL)
+    {
+        printf(rojo"No se pudo crear reporte_venta_fecha.txt\n"reset);
+        fclose(ptr_agendaf);
+        fclose(ptr_serviciosf);
+        return;
+    }
+
+    fprintf(ptr_reportesf,"VENTA POR FECHA: %02d/%02d/%04d\n\n",
+            f.dia,f.mes,f.ano);
+    fprintf(ptr_reportesf,"%-6s %-10s %-10s %-10s %-12s %-10s\n",
+            "CLAVE","CLI","EMP","SERV","FECHA","IMPORTE");
+
+    rewind(ptr_agendaf);
+
+    while(fread(&ag, sizeof(struct datos_agenda), 1, ptr_agendaf) == 1)
+    {
+        if(ag.clave != 0 &&
+           ag.fecha_agendada.dia == f.dia &&
+           ag.fecha_agendada.mes == f.mes &&
+           ag.fecha_agendada.ano == f.ano)
+        {
+            float precio = 0.0f;
+            rewind(ptr_serviciosf);
+
+            while(fread(&serv, sizeof(struct datos_servicios), 1, ptr_serviciosf) == 1)
+            {
+                if(serv.clave == ag.clave_servicio)
+                {
+                    precio = serv.precio;
+                    break;
+                }
+            }
+
+            fprintf(ptr_reportesf,
+                    "%-6d %-10d %-10d %-10d %02d/%02d/%04d %-10.2f\n",
+                    ag.clave,
+                    ag.clave_cliente,
+                    ag.clave_empleado,
+                    ag.clave_servicio,
+                    ag.fecha_agendada.dia,
+                    ag.fecha_agendada.mes,
+                    ag.fecha_agendada.ano,
+                    precio);
+
+            total += precio;
+        }
+    }
+
+    fprintf(ptr_reportesf,"\nTOTAL VENTA DEL DIA: %.2f\n", total);
+
+    fclose(ptr_agendaf);
+    fclose(ptr_serviciosf);
+    fclose(ptr_reportesf);
+    printf("Reporte generado: reporte_venta_fecha.txt\n");
+}
+
+void reporte_generar_archivo_clientes(void)
+{
+    FILE *ptr_clientesf, *ptr_reportesf;
+    struct datos_clientes cli;
+
+    if((ptr_clientesf = fopen("clientes1.dat","rb")) == NULL)
+    {
+        printf(rojo"No se pudo abrir clientes1.dat\n"reset);
+        return;
+    }
+
+    if((ptr_reportesf = fopen("reporte_clientes.txt","w")) == NULL)
+    {
+        printf(rojo"No se pudo crear reporte_clientes.txt\n"reset);
+        fclose(ptr_clientesf);
+        return;
+    }
+
+    fprintf(ptr_reportesf,"LISTADO GENERAL DE CLIENTES\n\n");
+    fprintf(ptr_reportesf,"%-6s %-20s %-15s %-25s %-40s\n",
+            "CLAVE","NOMBRE","TELEFONO","CORREO","DIRECCION");
+
+    while(fread(&cli, sizeof(struct datos_clientes), 1, ptr_clientesf) == 1)
+    {
+        if(cli.clave != 0)
+        {
+            fprintf(ptr_reportesf,
+                    "%-6d %-20s %-15s %-25s %s %d, %s, %s, %s\n",
+                    cli.clave,
+                    cli.nombre,
+                    cli.telefono,
+                    cli.correo,
+                    cli.direccion_cliente.calle,
+                    cli.direccion_cliente.num_exterior,
+                    cli.direccion_cliente.colonia,
+                    cli.direccion_cliente.municipio,
+                    cli.direccion_cliente.estado);
+        }
+    }
+
+    fclose(ptr_clientesf);
+    fclose(ptr_reportesf);
+    printf("Reporte generado: reporte_clientes.txt\n");
+}
+
+void reporte_generar_archivo_empleados(void)
+{
+    FILE *ptr_empleadosf, *ptr_reportesf;
+    struct datos_empleados emp;
+
+    if((ptr_empleadosf = fopen("empleados.dat","rb")) == NULL)
+    {
+        printf(rojo"No se pudo abrir empleados.dat\n"reset);
+        return;
+    }
+
+    if((ptr_reportesf = fopen("reporte_empleados.txt","w")) == NULL)
+    {
+        printf(rojo"No se pudo crear reporte_empleados.txt\n"reset);
+        fclose(ptr_empleadosf);
+        return;
+    }
+
+    fprintf(ptr_reportesf,"LISTADO GENERAL DE EMPLEADOS\n\n");
+    fprintf(ptr_reportesf,"%-6s %-20s %-20s %-12s %-15s %-25s %-40s\n",
+            "CLAVE","NOMBRE","PUESTO","F.CONTRATO","TELEFONO","CORREO","DIRECCION");
+
+    while(fread(&emp, sizeof(struct datos_empleados), 1, ptr_empleadosf) == 1)
+    {
+        if(emp.clave != 0)
+        {
+            fprintf(ptr_reportesf,
+                    "%-6d %-20s %-20s %02d/%02d/%04d %-15s %-25s %s %d, %s, %s, %s\n",
+                    emp.clave,
+                    emp.nombre,
+                    emp.puesto,
+                    emp.fecha_contratacion.dia,
+                    emp.fecha_contratacion.mes,
+                    emp.fecha_contratacion.ano,
+                    emp.telefono,
+                    emp.correo,
+                    emp.direccion_empleado.calle,
+                    emp.direccion_empleado.num_exterior,
+                    emp.direccion_empleado.colonia,
+                    emp.direccion_empleado.municipio,
+                    emp.direccion_empleado.estado);
+        }
+    }
+
+    fclose(ptr_empleadosf);
+    fclose(ptr_reportesf);
+    printf("Reporte generado: reporte_empleados.txt\n");
+}
+
+void reporte_mostrar_archivo(void)
+{
+    FILE *ptr_reportesf;
+    char nombre_archivo[150];
+    char linea[400];
+
+    fflush(stdin);
+    printf("Ingrese el nombre del archivo de reporte a mostrar: ");
+    gets(nombre_archivo);
+
+    if((ptr_reportesf = fopen(nombre_archivo,"r")) == NULL)
+    {
+        printf(rojo"No se pudo abrir el archivo %s\n"reset, nombre_archivo);
+        return;
+    }
+
+    printf("\n--- Contenido de %s ---\n\n", nombre_archivo);
+    while(fgets(linea, sizeof(linea), ptr_reportesf) != NULL)
+    {
+        printf("%s", linea);
+    }
+    printf("\n--- Fin del archivo ---\n");
+
+    fclose(ptr_reportesf);
+}
+
+
+
