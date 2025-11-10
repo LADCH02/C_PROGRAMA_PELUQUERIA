@@ -1952,7 +1952,7 @@ void agregar_servicios(FILE* Ptr_Serviciosdatf)
 		
 		do
 		{
-			printf("Desea agregar un nuevo regristro (Si/No): \n");
+			printf("Desea agregar un nuevo servicio (Si/No): \n");
 			fflush(stdin);
 			gets(siono);	
 		}while(validar_siono(siono, 1));
@@ -2019,7 +2019,7 @@ void consultar_servicio(FILE* ptrservicio)
 				do
 				{
 					fflush(stdin);
-					printf("Ingrese la clave del cliente a consultar\n");
+					printf("Ingrese la clave del servicio a consultar\n");
 					scanf("%d",&clave_servicio);
 				}while(validar_clave(&clave_servicio));
 				
@@ -2028,14 +2028,14 @@ void consultar_servicio(FILE* ptrservicio)
 				
 				if(serviciof.clave == clave_servicio)
 				{
-					printf("%-20s%-20s%-20s%-20s\n", "CLAVE", "DESCRIPCION", "DURACION DEL SERV", "PRECIO");
-					printf("%-20d%-20s%-20d%-20d%-20f",serviciof.clave,serviciof.descripcion,serviciof.duracion.hora,serviciof.duracion.minutos,serviciof.precio);
+					printf("%-20s%-20s%-20s%-20s\n", "CLAVE", "DESCRIPCION", "DURACION DEL SERVICIO", "PRECIO");
+					printf("%-20d%-20s%-20d%:20d%-20f",serviciof.clave,serviciof.descripcion,serviciof.duracion.hora,serviciof.duracion.minutos,serviciof.precio);
 				}
 				else
 					printf(rojo"La clave ingresada no existe\n"reset);
 				break;
 			case 2:
-				printf("Regresando al menu empleados...\n");
+				printf("Regresando al menu servicios...\n");
 				break;
 		}
 		
@@ -2092,7 +2092,7 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
 
 	do
 	{
-		printf("%20s\n", "Que desea modificar del cliente: ");
+		printf("%20s\n", "Que desea modificar del servicio: ");
 		printf("%-15s\n","1.-Descripcion");
 		printf("%-15s\n","2.-Precio");
 		printf("%-15s\n","3.-Tiempo de duracion");
@@ -2126,7 +2126,7 @@ void modificar_menu_servicio(FILE *Ptr_fileTxt, struct datos_servicios *c )
 			
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_servicios), SEEK_SET);
 			fwrite(c, sizeof(struct datos_servicios),1,Ptr_fileTxt);
-			printf("Cliente modificado con exito\n");			
+			printf("servicio modificado con exito\n");			
 			break;
 			
 		case 3:
