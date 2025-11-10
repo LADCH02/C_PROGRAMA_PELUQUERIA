@@ -4,7 +4,6 @@
 #include <ctype.h>
 #include <time.h>
 
-
 #define rojo "\033[0;31m"
 #define reset "\033[0m"
 
