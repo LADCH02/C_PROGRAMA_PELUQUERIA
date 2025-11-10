@@ -83,6 +83,8 @@ bool validar_num_casa(int *);
 bool validar_puesto(char *);
 bool validar_duracion(struct tiempo *);
 bool validar_precio(float *);
+bool validar_correo(char *);
+
 
 // funciones usadas para clientes
 void clientes(FILE*);
@@ -561,6 +563,26 @@ bool validar_existencia_clave_agenda(int *clave_agendaf, FILE *Ptr_agendadatf)
 	return cambio;
 }
 
+bool validar_correo(char *cadena)
+{
+    int i = 0, longitudCadena = strlen(cadena);
+    bool hayArroba = false, correoValido = false;
+
+    while(i < longitudCadena)
+    {
+        if(cadena[i] == '@')
+            hayArroba = true;
+        if(cadena[i] == '.' && hayArroba)
+        {
+            if(isalpha(cadena[i-1]) != 0 && isalpha(cadena[i+1]) != 0)
+                correoValido = true;
+        }
+        i++;
+    }
+
+    return correoValido;
+}
+
 bool validar_nombre(char *nombref)
 {	
 	int i=0;
@@ -650,7 +672,7 @@ void agregar_cliente(FILE* Ptr_Clientesdatf )
 			printf("ingrese correo electronico: \n");
 			fflush(stdin);
 			gets(cliente.correo);
-		}while(false);
+		}while(validar_correo(cliente.correo));
 		
 		printf("--- Direccion ---\n");
 		
@@ -758,7 +780,7 @@ void agregar_empleado(FILE* Ptr_empleadosdatf)
 			printf("Ingrese correo electronico: \n");
 			fflush(stdin);
 			gets(empleado.correo);
-		}while(false);
+		}while(validar_correo(empleado.correo));
 		
 		printf("--- Direccion ---\n");
 		
@@ -1032,7 +1054,7 @@ void modificar_empleado(FILE* Ptr_empleadosdatf)
 				rewind(Ptr_empleadosdatf);
 				fread(&empleadof, sizeof(struct datos_empleados),1,Ptr_empleadosdatf);
 				
-				while(!feof(Ptr_empleadosdatf) && && encontrado)
+				while(!feof(Ptr_empleadosdatf) && encontrado)
 				{
 					fread(&empleadof, sizeof(struct datos_empleados),1,Ptr_empleadosdatf);
 					if(strcmp(empleadof.telefono,telefono_buscar))
@@ -1106,7 +1128,7 @@ void modificar_menu_empleado(FILE *Ptr_fileTxt, struct datos_empleados *c )
 				fflush(stdin);
 				printf("Ingrese el nuevo correo del cliente\n");
 				gets(c->correo);
-			}while(validar_nombre(c->correo));
+			}while(validar_correo(c->correo));
 			
 			
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_empleados), SEEK_SET);
@@ -1654,7 +1676,7 @@ void modificar_menu_clientes(FILE *Ptr_fileTxt, struct datos_clientes *c )
 				fflush(stdin);
 				printf("Ingrese el nuevo correo del cliente\n");
 				gets(c->correo);
-			}while(validar_nombre(c->correo));
+			}while(validar_telefono(c->correo));
 		
 			fseek(Ptr_fileTxt, (c->clave - 1) * sizeof(struct datos_clientes), SEEK_SET);
 			fwrite(c, sizeof(struct datos_clientes),1,Ptr_fileTxt);
